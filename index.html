@@ -512,11 +512,13 @@
   </div>
 
   <script>
-    const APP_PASSWORD = "5300";
+    
+const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
+    const ADMIN_PASSWORD = "530033";   // Sadece sizin yöneteceğiniz şifre
 
     function checkPassword() {
       const input = document.getElementById("pass-input").value;
-      if (input === APP_PASSWORD) {
+      if (input === USER_PASSWORD || input === ADMIN_PASSWORD) {
         localStorage.setItem("auth_5300", "true");
         document.getElementById("lock-screen").style.display = "none";
         startPopupSequence();
@@ -525,11 +527,11 @@
       }
     }
 
-    // Ezber Ayeti Yönetici Güncellemesi
+// Ezber Ayeti Yönetici Güncellemesi
     function promptEditAyet() {
-      const pass = prompt("Ezber Âyetini değiştirmek için yönetici şifresini giriniz:");
-      if (pass !== APP_PASSWORD) {
-        alert("Hatalı şifre!");
+      const pass = prompt("Ezber Âyetini değiştirmek için YÖNETİCİ ŞİFRESİNİ giriniz:");
+      if (pass !== ADMIN_PASSWORD) {
+        alert("Hatalı yönetici şifresi!");
         return;
       }
       const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", state.ezberAyet.arapca);
@@ -742,10 +744,10 @@
       render();
     }
 
-    function advanceToNextDay() {
-      const auth = prompt("Yönetici Şifresini Giriniz:");
-      if (auth !== APP_PASSWORD) {
-        alert("Hatalı şifre!");
+function advanceToNextDay() {
+      const auth = prompt("Sonraki güne geçmek için YÖNETİCİ ŞİFRESİNİ giriniz:");
+      if (auth !== ADMIN_PASSWORD) {
+        alert("Hatalı yönetici şifresi!");
         return;
       }
 
