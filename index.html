@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Günlük Okuma ve Dua Takip Panosu</title>
+  
+  <!-- Firebase Canlı Veritabanı Kütüphaneleri -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --primary: #064e3b;
@@ -15,22 +20,17 @@
       --text: #1e293b;
       --border: #cbd5e1;
     }
-
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
     }
-
     body {
       background-color: var(--bg);
       color: var(--text);
       padding-bottom: 80px;
     }
-
-    /* Kilit Ekranı */
     #lock-screen {
       position: fixed;
       top: 0; left: 0;
@@ -72,11 +72,8 @@
       letter-spacing: 6px;
       font-weight: bold;
       outline: none;
-      transition: border-color 0.2s;
     }
-    .lock-input:focus {
-      border-color: var(--gold);
-    }
+    .lock-input:focus { border-color: var(--gold); }
     .btn-unlock {
       width: 100%;
       margin-top: 16px;
@@ -95,8 +92,6 @@
       margin-top: 10px;
       display: none;
     }
-
-    /* Sabit En Üst Ezber Ayeti Bannerı */
     .top-banner {
       background: linear-gradient(135deg, #064e3b, #022c22);
       color: #fff;
@@ -142,17 +137,15 @@
       border: 1px solid rgba(255,255,255,0.3);
       color: #fff;
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 5px 10px;
       border-radius: 6px;
       cursor: pointer;
     }
-
     .container {
       max-width: 720px;
       margin: 0 auto;
       padding: 16px;
     }
-
     .header-actions {
       display: flex;
       flex-direction: column;
@@ -189,8 +182,6 @@
       font-weight: 600;
       cursor: pointer;
     }
-
-    /* Bölüm Kartları */
     .section-card {
       background: #fff;
       border-radius: 14px;
@@ -217,7 +208,6 @@
       border-radius: 6px;
       font-weight: 600;
     }
-
     .task-list {
       display: flex;
       flex-direction: column;
@@ -233,7 +223,6 @@
       border: 1px solid #e2e8f0;
       cursor: pointer;
       user-select: none;
-      transition: background 0.15s, border-color 0.15s;
     }
     .task-item.checked {
       background: #ecfdf5;
@@ -269,9 +258,7 @@
       font-size: 15px;
       display: none;
     }
-    .task-item.checked .custom-checkbox::after {
-      display: block;
-    }
+    .task-item.checked .custom-checkbox::after { display: block; }
     .task-details .name {
       font-size: 15px;
       color: var(--text);
@@ -281,8 +268,6 @@
       color: #64748b;
       margin-top: 2px;
     }
-
-    /* Büyütülmüş Pop-up Pencereleri */
     .popup-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -295,9 +280,7 @@
       padding: 12px;
       backdrop-filter: blur(5px);
     }
-    .popup-overlay.hidden {
-      display: none;
-    }
+    .popup-overlay.hidden { display: none; }
     .popup-box {
       background: #fff;
       border-radius: 18px;
@@ -336,7 +319,6 @@
       max-height: 74vh;
       object-fit: contain;
       border-radius: 12px;
-      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
     }
     .popup-content .dua-box {
       background: #f0fdf4;
@@ -383,19 +365,19 @@
     </div>
   </div>
 
-  <!-- Sabit En Üst Ezber Ayeti Bannerı -->
+  <!-- Sabit En Üst Ezber Âyeti Şeridi -->
   <div class="top-banner">
     <button class="btn-edit-ayet" onclick="promptEditAyet()">⚙️ Âyeti Değiştir</button>
     <div class="badge">📿 Bu Haftanın Ezber Âyeti</div>
-    <div class="arabic" id="banner-arabic">سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ</div>
-    <div class="meal" id="banner-meal">"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)</div>
+    <div class="arabic" id="banner-arabic">Yükleniyor...</div>
+    <div class="meal" id="banner-meal">Yükleniyor...</div>
   </div>
 
   <div class="container">
     <div class="header-actions">
       <div class="date-info">
-        <h2 id="current-date-title">Günlük Takip Panosu</h2>
-        <p id="sub-info">Okuma Halka Sistemi</p>
+        <h2 id="current-date-title">Günlük Okuma Takibi</h2>
+        <p id="sub-info">Bağlantı kuruluyor...</p>
       </div>
       <button class="btn-next-day" onclick="advanceToNextDay()">🌙 Sonraki Güne Geç</button>
     </div>
@@ -443,7 +425,7 @@
     </div>
   </div>
 
-  <!-- POP-UP 1: GENEL DUA -->
+  <!-- POP-UP 1 -->
   <div class="popup-overlay hidden" id="popup-1">
     <div class="popup-box">
       <div class="popup-header">🤲 Allah Kabul Etsin</div>
@@ -461,20 +443,18 @@
     </div>
   </div>
 
-  <!-- POP-UP 2: GÜNÜN TEMATİK KARTI (GÖRSEL ALANI) -->
+  <!-- POP-UP 2 -->
   <div class="popup-overlay hidden" id="popup-2">
     <div class="popup-box">
       <div class="popup-header" id="popup-2-title">Günün Manevi Kartı</div>
-      <div class="popup-image-container" id="popup-2-body">
-        <!-- Dinamik Resim -->
-      </div>
+      <div class="popup-image-container" id="popup-2-body"></div>
       <div class="popup-footer">
         <button class="btn-popup" onclick="nextPopup(2)">Devam Et ➔</button>
       </div>
     </div>
   </div>
 
-  <!-- POP-UP 3: GÜNÜN VEFA DUASI -->
+  <!-- POP-UP 3 -->
   <div class="popup-overlay hidden" id="popup-3">
     <div class="popup-box">
       <div class="popup-header">🌹 Günün Vefa Duası</div>
@@ -492,17 +472,16 @@
     </div>
   </div>
 
-  <!-- POP-UP 4: EZBER ÂYETİ -->
+  <!-- POP-UP 4 -->
   <div class="popup-overlay hidden" id="popup-4">
     <div class="popup-box">
       <div class="popup-header">📿 Bu Haftanın Ezber Âyeti</div>
       <div class="popup-content" style="text-align: center;">
         <p style="font-size: 22px; color: var(--primary); direction: rtl; font-family: 'Traditional Arabic', serif; margin-bottom: 14px;" id="popup-arabic">
-          سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ
+          سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اinsanın
         </p>
         <div class="dua-box" style="text-align: left;" id="popup-meal">
-          <strong>Bakara Sûresi, 32. Âyet:</strong><br>
-          "Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin."
+          ...
         </div>
       </div>
       <div class="popup-footer">
@@ -512,9 +491,23 @@
   </div>
 
   <script>
-    
-const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
-    const ADMIN_PASSWORD = "530033";   // Sadece sizin yöneteceğiniz şifre
+    // 1. FIREBASE BAĞLANTISI
+    const firebaseConfig = {
+      apiKey: "AIzaSyCjSWX_W2e91f87VWrSxARMvsB_kTHXI5o",
+      authDomain: "okumatakip-f3db1.firebaseapp.com",
+      databaseURL: "https://okumatakip-f3db1-default-rtdb.firebaseio.com",
+      projectId: "okumatakip-f3db1",
+      storageBucket: "okumatakip-f3db1.firebasestorage.app",
+      messagingSenderId: "200790203481",
+      appId: "1:200790203481:web:8e898af66db47384a42548"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const stateRef = db.ref("panoState");
+
+    const USER_PASSWORD = "5300";
+    const ADMIN_PASSWORD = "530033";
 
     function checkPassword() {
       const input = document.getElementById("pass-input").value;
@@ -525,31 +518,6 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
       } else {
         document.getElementById("lock-err").style.display = "block";
       }
-    }
-
-// Ezber Ayeti Yönetici Güncellemesi
-    function promptEditAyet() {
-      const pass = prompt("Ezber Âyetini değiştirmek için YÖNETİCİ ŞİFRESİNİ giriniz:");
-      if (pass !== ADMIN_PASSWORD) {
-        alert("Hatalı yönetici şifresi!");
-        return;
-      }
-      const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", state.ezberAyet.arapca);
-      if (!yeniArapca) return;
-      const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", state.ezberAyet.meal);
-      if (!yeniMeal) return;
-
-      state.ezberAyet = { arapca: yeniArapca, meal: yeniMeal };
-      saveState();
-      renderAyet();
-      alert("Haftanın ezber âyeti başarıyla güncellendi!");
-    }
-
-    function renderAyet() {
-      document.getElementById("banner-arabic").innerText = state.ezberAyet.arapca;
-      document.getElementById("banner-meal").innerText = state.ezberAyet.meal;
-      document.getElementById("popup-arabic").innerText = state.ezberAyet.arapca;
-      document.getElementById("popup-meal").innerHTML = state.ezberAyet.meal;
     }
 
     const vefaListesi = [
@@ -568,7 +536,6 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
       0: { gun: "Pazar", abi: "Gökhan" }
     };
 
-    // Günün Resim Dosyaları Eşleştirmesi
     const gunlukGorseller = {
       1: { baslik: "Vefat Eden Risale-i Nur Talebeleri", dosya: "pazartesi.jpg" },
       2: { baslik: "Kur’ân’da İsmi Geçen 25 Peygamber", dosya: "sali.jpg" },
@@ -580,7 +547,7 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
     };
 
     const defaultState = {
-      gunSayaci: 1,
+      gunSayaci: 2,
       ezberAyet: {
         arapca: "سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ",
         meal: '"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)'
@@ -599,24 +566,96 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
       tahmidiyeKisiler: ["Necmettin", "Muhyiddin", "Gökhan", "Hasan Abi", "Necdet Abi", "Hakan"],
       delailBloklar: ["8–9", "10–15", "16–20", "21–25", "1–4", "5–7"],
       delailKisiler: ["Akif Zorlu Abi", "Hasan Abi", "Macit Abi", "Yusuf Erge Abi", "Yusuf Sarıoğlu Abi", "Gökhan"],
-      vefaSirasi: 0,
-      tamamlananlar: {}
+      vefaSirasi: 0
     };
 
-    let state = JSON.parse(localStorage.getItem("okumaTakipState")) || defaultState;
-    if (!state.ezberAyet) {
-      state.ezberAyet = defaultState.ezberAyet;
+    let liveState = defaultState;
+    let localChecks = JSON.parse(localStorage.getItem("okumaTakip_tikler")) || {};
+
+    // 2. FIREBASE'DEN CANLI DİNLEME (Tüm cihazlar anlık senkron olur)
+    stateRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        stateRef.set(defaultState);
+      } else {
+        liveState = data;
+        render();
+      }
+    });
+
+    // 3. YÖNETİCİ: ÂYETİ DEĞİŞTİR (Doğrudan bulutu günceller)
+    function promptEditAyet() {
+      const pass = prompt("Ezber Âyetini değiştirmek için YÖNETİCİ ŞİFRESİNİ giriniz:");
+      if (pass !== ADMIN_PASSWORD) {
+        alert("Hatalı yönetici şifresi!");
+        return;
+      }
+      const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", liveState.ezberAyet.arapca);
+      if (!yeniArapca) return;
+      const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", liveState.ezberAyet.meal);
+      if (!yeniMeal) return;
+
+      stateRef.child("ezberAyet").set({
+        arapca: yeniArapca,
+        meal: yeniMeal
+      }).then(() => {
+        alert("Haftanın ezber âyeti Firebase üzerinden tüm grupta güncellendi!");
+      });
     }
 
-    function saveState() {
-      localStorage.setItem("okumaTakipState", JSON.stringify(state));
+    // 4. YÖNETİCİ: SONRAKİ GÜNE GEÇ (Doğrudan bulutu günceller)
+    function advanceToNextDay() {
+      const auth = prompt("Sonraki güne geçmek için YÖNETİCİ ŞİFRESİNİ giriniz:");
+      if (auth !== ADMIN_PASSWORD) {
+        alert("Hatalı yönetici şifresi!");
+        return;
+      }
+
+      const yeniRisale = liveState.risaleSayfalari.map(item => ({
+        ...item,
+        basla: item.basla + 3,
+        bitir: item.bitir + 3
+      }));
+
+      const yeniTahmidiye = [...liveState.tahmidiyeBloklar];
+      yeniTahmidiye.unshift(yeniTahmidiye.pop());
+
+      const yeniDelail = [...liveState.delailBloklar];
+      yeniDelail.unshift(yeniDelail.pop());
+
+      const yeniVefa = (liveState.vefaSirasi + 1) % vefaListesi.length;
+      const yeniGun = (liveState.gunSayaci || 2) + 1;
+
+      stateRef.update({
+        gunSayaci: yeniGun,
+        risaleSayfalari: yeniRisale,
+        tahmidiyeBloklar: yeniTahmidiye,
+        delailBloklar: yeniDelail,
+        vefaSirasi: yeniVefa
+      }).then(() => {
+        alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi! Tüm cihazlarda güncellendi.`);
+        localChecks = {};
+        localStorage.removeItem("okumaTakip_tikler");
+        startPopupSequence();
+      });
+    }
+
+    function toggleTask(id) {
+      localChecks[id] = !localChecks[id];
+      localStorage.setItem("okumaTakip_tikler", JSON.stringify(localChecks));
+      render();
     }
 
     function render() {
-      renderAyet();
+      if (!liveState || !liveState.ezberAyet) return;
 
-      document.getElementById("list-risale").innerHTML = state.risaleSayfalari.map((item, idx) => `
-        <div class="task-item ${state.tamamlananlar['r_' + idx] ? 'checked' : ''}" onclick="toggleTask('r_${idx}')">
+      document.getElementById("banner-arabic").innerText = liveState.ezberAyet.arapca;
+      document.getElementById("banner-meal").innerText = liveState.ezberAyet.meal;
+      document.getElementById("popup-arabic").innerText = liveState.ezberAyet.arapca;
+      document.getElementById("popup-meal").innerHTML = liveState.ezberAyet.meal;
+
+      document.getElementById("list-risale").innerHTML = liveState.risaleSayfalari.map((item, idx) => `
+        <div class="task-item ${localChecks['r_' + idx] ? 'checked' : ''}" onclick="toggleTask('r_${idx}')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
@@ -627,25 +666,25 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
         </div>
       `).join("");
 
-      document.getElementById("list-tahmidiye").innerHTML = state.tahmidiyeKisiler.map((kisi, idx) => `
-        <div class="task-item ${state.tamamlananlar['t_' + idx] ? 'checked' : ''}" onclick="toggleTask('t_${idx}')">
+      document.getElementById("list-tahmidiye").innerHTML = liveState.tahmidiyeKisiler.map((kisi, idx) => `
+        <div class="task-item ${localChecks['t_' + idx] ? 'checked' : ''}" onclick="toggleTask('t_${idx}')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
               <div class="name">${kisi}</div>
-              <div class="meta">${state.tahmidiyeBloklar[idx]}. Bölüm</div>
+              <div class="meta">${liveState.tahmidiyeBloklar[idx]}. Bölüm</div>
             </div>
           </div>
         </div>
       `).join("");
 
-      document.getElementById("list-delail").innerHTML = state.delailKisiler.map((kisi, idx) => `
-        <div class="task-item ${state.tamamlananlar['d_' + idx] ? 'checked' : ''}" onclick="toggleTask('d_${idx}')">
+      document.getElementById("list-delail").innerHTML = liveState.delailKisiler.map((kisi, idx) => `
+        <div class="task-item ${localChecks['d_' + idx] ? 'checked' : ''}" onclick="toggleTask('d_${idx}')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
               <div class="name">${kisi}</div>
-              <div class="meta">${state.delailBloklar[idx]}. Bölüm</div>
+              <div class="meta">${liveState.delailBloklar[idx]}. Bölüm</div>
             </div>
           </div>
         </div>
@@ -654,7 +693,7 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
       const bugunNo = new Date().getDay();
       const sItem = sekineNobetleri[bugunNo];
       document.getElementById("list-sekine").innerHTML = `
-        <div class="task-item ${state.tamamlananlar['sekine'] ? 'checked' : ''}" onclick="toggleTask('sekine')">
+        <div class="task-item ${localChecks['sekine'] ? 'checked' : ''}" onclick="toggleTask('sekine')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
@@ -674,7 +713,7 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
         { isim: "Gökhan Abi", b: "86–100 ve Duası" }
       ];
       document.getElementById("list-cevsen").innerHTML = cevsenList.map((c, idx) => `
-        <div class="task-item ${state.tamamlananlar['cev_' + idx] ? 'checked' : ''}" onclick="toggleTask('cev_${idx}')">
+        <div class="task-item ${localChecks['cev_' + idx] ? 'checked' : ''}" onclick="toggleTask('cev_${idx}')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
@@ -698,7 +737,7 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
         { isim: "Muhyiddin", s: "Saff Sûresi (14 âyet)" }
       ];
       document.getElementById("list-sure").innerHTML = sureList.map((s, idx) => `
-        <div class="task-item ${state.tamamlananlar['sur_' + idx] ? 'checked' : ''}" onclick="toggleTask('sur_${idx}')">
+        <div class="task-item ${localChecks['sur_' + idx] ? 'checked' : ''}" onclick="toggleTask('sur_${idx}')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
@@ -723,7 +762,7 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
         { isim: "Yusuf Erge Abi", p: "499–500" }
       ];
       document.getElementById("list-kuran").innerHTML = kuranList.map((k, idx) => `
-        <div class="task-item ${state.tamamlananlar['kur_' + idx] ? 'checked' : ''}" onclick="toggleTask('kur_${idx}')">
+        <div class="task-item ${localChecks['kur_' + idx] ? 'checked' : ''}" onclick="toggleTask('kur_${idx}')">
           <div class="task-info">
             <div class="custom-checkbox"></div>
             <div class="task-details">
@@ -734,37 +773,8 @@ const USER_PASSWORD = "5300";      // Abilerin giriş şifresi
         </div>
       `).join("");
 
-      document.getElementById("current-date-title").innerText = `Günlük Okuma Takibi (Döngü Günü: ${state.gunSayaci})`;
-      document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[state.vefaSirasi]}`;
-    }
-
-    function toggleTask(id) {
-      state.tamamlananlar[id] = !state.tamamlananlar[id];
-      saveState();
-      render();
-    }
-
-function advanceToNextDay() {
-      const auth = prompt("Sonraki güne geçmek için YÖNETİCİ ŞİFRESİNİ giriniz:");
-      if (auth !== ADMIN_PASSWORD) {
-        alert("Hatalı yönetici şifresi!");
-        return;
-      }
-
-      state.risaleSayfalari.forEach(item => {
-        item.basla += 3;
-        item.bitir += 3;
-      });
-
-      state.tahmidiyeBloklar.unshift(state.tahmidiyeBloklar.pop());
-      state.delailBloklar.unshift(state.delailBloklar.pop());
-      state.vefaSirasi = (state.vefaSirasi + 1) % vefaListesi.length;
-      state.gunSayaci += 1;
-      state.tamamlananlar = {};
-
-      saveState();
-      render();
-      startPopupSequence();
+      document.getElementById("current-date-title").innerText = `Günlük Okuma Takibi (Döngü Günü: ${liveState.gunSayaci || 2})`;
+      document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[liveState.vefaSirasi || 0]}`;
     }
 
     function startPopupSequence() {
@@ -779,12 +789,11 @@ function advanceToNextDay() {
         const bugunNo = new Date().getDay();
         const kart = gunlukGorseller[bugunNo];
         document.getElementById("popup-2-title").innerText = kart.baslik;
-        // Görseli yükler
         document.getElementById("popup-2-body").innerHTML = `
-          <img src="${kart.dosya}" alt="${kart.baslik}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\'padding:30px;color:#fff;text-align:center;\'><h3>${kart.baslik}</h3><p style=\'margin-top:10px;font-size:13px;opacity:0.8;\'>Görsel dosyası (${kart.dosya}) henüz yüklenmedi.</p></div>';">
+          <img src="${kart.dosya}" alt="${kart.baslik}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\'padding:30px;color:#fff;text-align:center;\'><h3>${kart.baslik}</h3><p style=\'margin-top:10px;font-size:13px;opacity:0.8;\'>Görsel yüklenemedi.</p></div>';">
         `;
       } else if (nextId === 3) {
-        document.getElementById("vefa-abi-name").innerText = vefaListesi[state.vefaSirasi];
+        document.getElementById("vefa-abi-name").innerText = vefaListesi[liveState.vefaSirasi || 0];
       }
 
       document.getElementById(`popup-${nextId}`).classList.remove("hidden");
@@ -795,7 +804,6 @@ function advanceToNextDay() {
     }
 
     window.addEventListener("DOMContentLoaded", () => {
-      render();
       if (localStorage.getItem("auth_5300") === "true") {
         document.getElementById("lock-screen").style.display = "none";
         startPopupSequence();
