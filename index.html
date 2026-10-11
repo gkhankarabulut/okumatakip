@@ -717,12 +717,18 @@
 
     let liveState = defaultState;
 
-    stateRef.on("value", (snapshot) => {
+stateRef.on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) {
         stateRef.set(defaultState);
       } else {
-        liveState = data;
+        // Eksik alanları defaultState ile tamamla
+        liveState = {
+          ...defaultState,
+          ...data,
+          sureNobetleri: data.sureNobetleri || defaultState.sureNobetleri,
+          kuranSayfalari: data.kuranSayfalari || defaultState.kuranSayfalari
+        };
         render();
       }
     });
