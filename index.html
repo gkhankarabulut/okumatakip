@@ -13,7 +13,7 @@
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #1e293b;
-      --border: #e2e8f0;
+      --border: #cbd5e1;
     }
 
     * {
@@ -27,10 +27,10 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 70px;
+      padding-bottom: 80px;
     }
 
-    /* Kilit / Şifre Ekranı */
+    /* Kilit Ekranı */
     #lock-screen {
       position: fixed;
       top: 0; left: 0;
@@ -45,17 +45,17 @@
     .lock-box {
       background: #fff;
       border-radius: 18px;
-      padding: 28px 24px;
+      padding: 30px 24px;
       width: 100%;
-      max-width: 360px;
+      max-width: 380px;
       text-align: center;
-      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.4);
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
       border: 2px solid var(--gold);
     }
     .lock-box h2 {
-      font-size: 20px;
+      font-size: 21px;
       color: var(--primary);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .lock-box p {
       font-size: 13px;
@@ -64,12 +64,12 @@
     }
     .lock-input {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: 2px solid #cbd5e1;
-      border-radius: 10px;
-      font-size: 20px;
+      border-radius: 12px;
+      font-size: 22px;
       text-align: center;
-      letter-spacing: 4px;
+      letter-spacing: 6px;
       font-weight: bold;
       outline: none;
       transition: border-color 0.2s;
@@ -79,13 +79,13 @@
     }
     .btn-unlock {
       width: 100%;
-      margin-top: 14px;
-      padding: 12px;
+      margin-top: 16px;
+      padding: 14px;
       background: var(--primary);
       color: #fff;
       border: none;
-      border-radius: 10px;
-      font-size: 15px;
+      border-radius: 12px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
     }
@@ -96,56 +96,72 @@
       display: none;
     }
 
-    /* Sabit Ezber Ayeti Bannerı */
+    /* Sabit En Üst Ezber Ayeti Bannerı */
     .top-banner {
       background: linear-gradient(135deg, #064e3b, #022c22);
       color: #fff;
-      padding: 12px 14px;
+      padding: 16px 18px;
       text-align: center;
-      border-bottom: 2px solid var(--gold);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      border-bottom: 3px solid var(--gold);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
     }
     .top-banner .badge {
       display: inline-block;
       background: var(--gold);
       color: #fff;
-      font-size: 11px;
+      font-size: 12px;
       font-weight: bold;
-      padding: 2px 8px;
-      border-radius: 12px;
-      margin-bottom: 6px;
+      padding: 4px 12px;
+      border-radius: 14px;
+      margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
     .top-banner .arabic {
-      font-size: 18px;
-      line-height: 1.6;
+      font-size: 22px;
+      line-height: 1.7;
       color: #fef08a;
       direction: rtl;
       font-family: "Traditional Arabic", "Amiri", serif;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
     .top-banner .meal {
-      font-size: 12px;
+      font-size: 13px;
       opacity: 0.95;
       font-style: italic;
+      max-width: 800px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+    .btn-edit-ayet {
+      position: absolute;
+      top: 12px;
+      right: 14px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
     }
 
     .container {
-      max-width: 680px;
+      max-width: 720px;
       margin: 0 auto;
-      padding: 14px;
+      padding: 16px;
     }
 
     .header-actions {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       background: #fff;
-      padding: 14px 16px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 16px 18px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
       border: 1px solid var(--border);
     }
     @media(min-width: 480px) {
@@ -156,7 +172,7 @@
       }
     }
     .date-info h2 {
-      font-size: 16px;
+      font-size: 17px;
       color: var(--primary);
     }
     .date-info p {
@@ -167,28 +183,28 @@
       background: var(--primary);
       color: #fff;
       border: none;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
+      padding: 11px 18px;
+      border-radius: 10px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
     }
 
-    /* Görev Kartları */
+    /* Bölüm Kartları */
     .section-card {
       background: #fff;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
       border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
     .section-card h3 {
-      font-size: 15px;
+      font-size: 16px;
       color: var(--primary);
       border-bottom: 2px solid var(--gold-light);
-      padding-bottom: 8px;
-      margin-bottom: 12px;
+      padding-bottom: 10px;
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -197,30 +213,31 @@
       font-size: 11px;
       background: #ecfdf5;
       color: var(--primary);
-      padding: 2px 8px;
+      padding: 3px 10px;
       border-radius: 6px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .task-list {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
     .task-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px;
+      padding: 12px 14px;
       background: #f8fafc;
-      border-radius: 8px;
-      border: 1px solid #f1f5f9;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
       cursor: pointer;
       user-select: none;
+      transition: background 0.15s, border-color 0.15s;
     }
     .task-item.checked {
       background: #ecfdf5;
-      border-color: #a7f3d0;
+      border-color: #6ee7b7;
     }
     .task-item.checked .name {
       color: var(--primary);
@@ -229,17 +246,18 @@
     .task-info {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
     .custom-checkbox {
-      width: 22px;
-      height: 22px;
-      border-radius: 6px;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
       border: 2px solid #cbd5e1;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
+      background: #fff;
     }
     .task-item.checked .custom-checkbox {
       background: var(--primary);
@@ -248,74 +266,90 @@
     .custom-checkbox::after {
       content: "✓";
       color: #fff;
-      font-size: 14px;
+      font-size: 15px;
       display: none;
     }
     .task-item.checked .custom-checkbox::after {
       display: block;
     }
     .task-details .name {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text);
     }
     .task-details .meta {
-      font-size: 12px;
+      font-size: 13px;
       color: #64748b;
+      margin-top: 2px;
     }
 
-    /* Pop-up Pencereleri */
+    /* Büyütülmüş Pop-up Pencereleri */
     .popup-overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      padding: 14px;
-      backdrop-filter: blur(4px);
+      padding: 12px;
+      backdrop-filter: blur(5px);
     }
     .popup-overlay.hidden {
       display: none;
     }
     .popup-box {
       background: #fff;
-      border-radius: 16px;
-      max-width: 480px;
-      width: 100%;
+      border-radius: 18px;
+      max-width: 580px;
+      width: 96%;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      max-height: 88vh;
+      max-height: 92vh;
+      box-shadow: 0 25px 30px -5px rgba(0, 0, 0, 0.4);
     }
     .popup-header {
       background: var(--primary);
       color: #fff;
-      padding: 14px;
+      padding: 16px;
       text-align: center;
-      font-size: 15px;
+      font-size: 17px;
       font-weight: 600;
-      border-bottom: 2px solid var(--gold);
+      border-bottom: 3px solid var(--gold);
     }
     .popup-content {
-      padding: 16px;
+      padding: 20px;
       overflow-y: auto;
-      font-size: 14px;
-      line-height: 1.6;
+      font-size: 15px;
+      line-height: 1.7;
       color: #334155;
+    }
+    .popup-image-container {
+      padding: 8px;
+      text-align: center;
+      background: #022c22;
+      overflow-y: auto;
+    }
+    .popup-image-container img {
+      width: 100%;
+      max-height: 74vh;
+      object-fit: contain;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.3);
     }
     .popup-content .dua-box {
       background: #f0fdf4;
-      border-left: 4px solid var(--primary);
-      padding: 12px;
-      border-radius: 0 8px 8px 0;
+      border-left: 5px solid var(--primary);
+      padding: 16px;
+      border-radius: 0 10px 10px 0;
       font-style: italic;
       color: #14532d;
-      margin-top: 10px;
+      margin-top: 14px;
+      font-size: 15px;
     }
     .popup-footer {
-      padding: 12px 16px;
+      padding: 14px 18px;
       background: #f8fafc;
       border-top: 1px solid var(--border);
       text-align: right;
@@ -324,9 +358,9 @@
       background: var(--gold);
       color: #fff;
       border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 14px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 15px;
       font-weight: 600;
       cursor: pointer;
       width: 100%;
@@ -351,9 +385,10 @@
 
   <!-- Sabit En Üst Ezber Ayeti Bannerı -->
   <div class="top-banner">
+    <button class="btn-edit-ayet" onclick="promptEditAyet()">⚙️ Âyeti Değiştir</button>
     <div class="badge">📿 Bu Haftanın Ezber Âyeti</div>
-    <div class="arabic">سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ</div>
-    <div class="meal">"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)</div>
+    <div class="arabic" id="banner-arabic">سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ</div>
+    <div class="meal" id="banner-meal">"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)</div>
   </div>
 
   <div class="container">
@@ -426,11 +461,13 @@
     </div>
   </div>
 
-  <!-- POP-UP 2: GÜNÜN TEMATİK KARTI -->
+  <!-- POP-UP 2: GÜNÜN TEMATİK KARTI (GÖRSEL ALANI) -->
   <div class="popup-overlay hidden" id="popup-2">
     <div class="popup-box">
       <div class="popup-header" id="popup-2-title">Günün Manevi Kartı</div>
-      <div class="popup-content" id="popup-2-body"></div>
+      <div class="popup-image-container" id="popup-2-body">
+        <!-- Dinamik Resim -->
+      </div>
       <div class="popup-footer">
         <button class="btn-popup" onclick="nextPopup(2)">Devam Et ➔</button>
       </div>
@@ -442,7 +479,7 @@
     <div class="popup-box">
       <div class="popup-header">🌹 Günün Vefa Duası</div>
       <div class="popup-content">
-        <p style="font-size: 15px; text-align: center; color: var(--primary);">
+        <p style="font-size: 16px; text-align: center; color: var(--primary);">
           Bugün Dualarımız: <strong id="vefa-abi-name">...</strong>, muhterem aile efradı ve geçmişlerinin ruhları için.
         </p>
         <div class="dua-box">
@@ -460,10 +497,10 @@
     <div class="popup-box">
       <div class="popup-header">📿 Bu Haftanın Ezber Âyeti</div>
       <div class="popup-content" style="text-align: center;">
-        <p style="font-size: 19px; color: var(--primary); direction: rtl; font-family: 'Traditional Arabic', serif; margin-bottom: 12px;">
+        <p style="font-size: 22px; color: var(--primary); direction: rtl; font-family: 'Traditional Arabic', serif; margin-bottom: 14px;" id="popup-arabic">
           سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ
         </p>
-        <div class="dua-box" style="text-align: left;">
+        <div class="dua-box" style="text-align: left;" id="popup-meal">
           <strong>Bakara Sûresi, 32. Âyet:</strong><br>
           "Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin."
         </div>
@@ -488,6 +525,31 @@
       }
     }
 
+    // Ezber Ayeti Yönetici Güncellemesi
+    function promptEditAyet() {
+      const pass = prompt("Ezber Âyetini değiştirmek için yönetici şifresini giriniz:");
+      if (pass !== APP_PASSWORD) {
+        alert("Hatalı şifre!");
+        return;
+      }
+      const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", state.ezberAyet.arapca);
+      if (!yeniArapca) return;
+      const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", state.ezberAyet.meal);
+      if (!yeniMeal) return;
+
+      state.ezberAyet = { arapca: yeniArapca, meal: yeniMeal };
+      saveState();
+      renderAyet();
+      alert("Haftanın ezber âyeti başarıyla güncellendi!");
+    }
+
+    function renderAyet() {
+      document.getElementById("banner-arabic").innerText = state.ezberAyet.arapca;
+      document.getElementById("banner-meal").innerText = state.ezberAyet.meal;
+      document.getElementById("popup-arabic").innerText = state.ezberAyet.arapca;
+      document.getElementById("popup-meal").innerHTML = state.ezberAyet.meal;
+    }
+
     const vefaListesi = [
       "Yusuf Sarıoğlu Abi", "Ercan Abi", "Gökhan Abi", "Necmettin Abi",
       "Mehmet Biber Abi", "Hakan Abi", "Macit Abi", "Muhyiddin Abi",
@@ -504,18 +566,23 @@
       0: { gun: "Pazar", abi: "Gökhan" }
     };
 
-    const tematikKartlar = {
-      1: { baslik: "Vefat Eden Risale-i Nur Talebeleri", ozet: "Risale-i Nur hizmetinde ömürlerini vakfetmiş bütün saff-ı evvel talebeleri rahmetle yâd ediyoruz." },
-      2: { baslik: "Kur’ân’da İsmi Geçen 25 Peygamber", ozet: "Allah'ın elçilerini tanıyalım, sevelim ve onlara dua edelim." },
-      3: { baslik: "Ashâb-ı Bedir (313 Şanlı Mücahid)", ozet: "Bedir Gazvesi'nin aziz ve mübarek ashabını hürmet ve minnetle yâd ediyoruz." },
-      4: { baslik: "Uhud Şehitleri", ozet: "Seyyidü'ş-Şühedâ Hz. Hamza ve Uhud meydanında canlarını feda eden aziz şehitlerimiz." },
-      5: { baslik: "Aşere-i Mübeşşere", ozet: "Hayattayken cennetle müjdelenen 10 büyük sahabe-i kiram." },
-      6: { baslik: "Kütüb-i Sitte İmamları", ozet: "Hadis ilminin zirve isimleri ve altı temel eserin müellifleri." },
-      0: { baslik: "Meşhur Evliyalar", ozet: "İslâm dünyasının gönül sultanları ve büyük velîleri." }
+    // Günün Resim Dosyaları Eşleştirmesi
+    const gunlukGorseller = {
+      1: { baslik: "Vefat Eden Risale-i Nur Talebeleri", dosya: "pazartesi.jpg" },
+      2: { baslik: "Kur’ân’da İsmi Geçen 25 Peygamber", dosya: "sali.jpg" },
+      3: { baslik: "Ashâb-ı Bedir (313 Şanlı Mücahid)", dosya: "carsamba.jpg" },
+      4: { baslik: "Uhud Şehitleri", dosya: "persembe.jpg" },
+      5: { baslik: "Aşere-i Mübeşşere", dosya: "cuma.jpg" },
+      6: { baslik: "Kütüb-i Sitte İmamları", dosya: "cumartesi.jpg" },
+      0: { baslik: "Meşhur Evliyalar", dosya: "pazar.jpg" }
     };
 
     const defaultState = {
       gunSayaci: 1,
+      ezberAyet: {
+        arapca: "سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ",
+        meal: '"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)'
+      },
       risaleSayfalari: [
         { isim: "Yusuf Erge Abi", basla: 4, bitir: 6, max: 26 },
         { isim: "Yusuf Sarıoğlu Abi", basla: 30, bitir: 32, max: 52 },
@@ -535,12 +602,17 @@
     };
 
     let state = JSON.parse(localStorage.getItem("okumaTakipState")) || defaultState;
+    if (!state.ezberAyet) {
+      state.ezberAyet = defaultState.ezberAyet;
+    }
 
     function saveState() {
       localStorage.setItem("okumaTakipState", JSON.stringify(state));
     }
 
     function render() {
+      renderAyet();
+
       document.getElementById("list-risale").innerHTML = state.risaleSayfalari.map((item, idx) => `
         <div class="task-item ${state.tamamlananlar['r_' + idx] ? 'checked' : ''}" onclick="toggleTask('r_${idx}')">
           <div class="task-info">
@@ -703,13 +775,11 @@
 
       if (nextId === 2) {
         const bugunNo = new Date().getDay();
-        const kart = tematikKartlar[bugunNo];
+        const kart = gunlukGorseller[bugunNo];
         document.getElementById("popup-2-title").innerText = kart.baslik;
+        // Görseli yükler
         document.getElementById("popup-2-body").innerHTML = `
-          <div style="background: linear-gradient(135deg, #064e3b, #022c22); color: #fff; padding: 20px; border-radius: 12px; border: 2px solid #d97706; text-align: center;">
-            <h3 style="color: #fef08a; font-size: 18px; margin-bottom: 8px;">${kart.baslik}</h3>
-            <p style="font-size: 13px; line-height: 1.5; opacity: 0.95;">${kart.ozet}</p>
-          </div>
+          <img src="${kart.dosya}" alt="${kart.baslik}" onerror="this.onerror=null; this.parentElement.innerHTML='<div style=\'padding:30px;color:#fff;text-align:center;\'><h3>${kart.baslik}</h3><p style=\'margin-top:10px;font-size:13px;opacity:0.8;\'>Görsel dosyası (${kart.dosya}) henüz yüklenmedi.</p></div>';">
         `;
       } else if (nextId === 3) {
         document.getElementById("vefa-abi-name").innerText = vefaListesi[state.vefaSirasi];
