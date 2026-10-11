@@ -29,7 +29,7 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 80px;
+      padding-bottom: 90px;
     }
     #lock-screen {
       position: fixed;
@@ -305,6 +305,17 @@
       color: #64748b;
       margin-top: 2px;
     }
+    .admin-switch-btn {
+      display: block;
+      margin: 25px auto 10px auto;
+      background: transparent;
+      border: 1px dashed #94a3b8;
+      color: #64748b;
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
     .popup-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -395,7 +406,7 @@
   <div id="lock-screen">
     <div class="lock-box">
       <h2>Manevi Okuma Panosu</h2>
-      <p>Lütfen grup erişim şifresini giriniz</p>
+      <p>Lütfen erişim şifresini giriniz</p>
       <input type="password" id="pass-input" class="lock-input" placeholder="••••" maxlength="8">
       <button class="btn-unlock" onclick="checkPassword()">Giriş Yap</button>
       <div id="lock-err" class="lock-error">Hatalı şifre girdiniz.</div>
@@ -476,6 +487,9 @@
       <h3 id="kuran-title">📖 Kur’ân-ı Azîmüşşan Okuması (25. Hafta) <span class="tag">Haftalık +20 Sayfa</span></h3>
       <div class="task-list" id="list-kuran"></div>
     </div>
+
+    <!-- Sayfa Altı Kolay Giriş / Çıkış Butonu -->
+    <button class="admin-switch-btn" id="admin-switch-btn" onclick="toggleAdminPrompt()">🔑 Yönetici Girişi Yap</button>
   </div>
 
   <!-- POP-UP 1 -->
@@ -583,15 +597,41 @@
       }
     }
 
+    // SAYFA İÇİNDEN YÖNETİCİ GİRİŞİ / ÇIKIŞI YAPMA
+    function toggleAdminPrompt() {
+      if (isAdmin) {
+        if (confirm("Yönetici modundan çıkıp normal kullanıcı moduna geçmek istiyor musunuz?")) {
+          isAdmin = false;
+          localStorage.removeItem("is_admin_530033");
+          applyAdminUI();
+          render();
+        }
+      } else {
+        const pass = prompt("Yönetici butonlarını açmak için YÖNETİCİ ŞİFRESİNİ giriniz:");
+        if (pass === ADMIN_PASSWORD) {
+          isAdmin = true;
+          localStorage.setItem("is_admin_530033", "true");
+          applyAdminUI();
+          render();
+          alert("Yönetici modu başarıyla açıldı!");
+        } else if (pass) {
+          alert("Hatalı yönetici şifresi!");
+        }
+      }
+    }
+
     function applyAdminUI() {
+      const switchBtn = document.getElementById("admin-switch-btn");
       if (isAdmin) {
         document.getElementById("admin-actions-group").style.display = "flex";
         document.getElementById("admin-stats-card").style.display = "block";
         document.getElementById("btn-edit-ayet-el").style.display = "block";
+        if (switchBtn) switchBtn.innerText = "🔒 Yönetici Modundan Çık";
       } else {
         document.getElementById("admin-actions-group").style.display = "none";
         document.getElementById("admin-stats-card").style.display = "none";
         document.getElementById("btn-edit-ayet-el").style.display = "none";
+        if (switchBtn) switchBtn.innerText = "🔑 Yönetici Girişi Yap";
       }
     }
 
@@ -687,13 +727,11 @@
       }
     });
 
-    // CANLI ORTAK TİK: Firebase bulutuna anında yazar
     function toggleTask(id) {
       const current = liveState.canliTikler && liveState.canliTikler[id];
       stateRef.child("canliTikler").child(id).set(!current);
     }
 
-    // YÖNETİCİ: ÂYET DEĞİŞTİR
     function promptEditAyet() {
       const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", liveState.ezberAyet.arapca);
       if (!yeniArapca) return;
@@ -735,11 +773,11 @@
         bitir: item.bitir + 3
       }));
 
-      // İLERİ DEVİR (10-12 okuyan 13-16'ya geçer)
+      // İLERİYE DEVİR (10-12 okuyan 13-16'ya geçer)
       const yeniTahmidiye = [...liveState.tahmidiyeBloklar];
       yeniTahmidiye.push(yeniTahmidiye.shift());
 
-      // İLERİ DEVİR (8-9 okuyan 10-15'e geçer)
+      // İLERİYE DEVİR (8-9 okuyan 10-15'e geçer)
       const yeniDelail = [...liveState.delailBloklar];
       yeniDelail.push(yeniDelail.shift());
 
@@ -754,9 +792,9 @@
         tahmidiyeBloklar: yeniTahmidiye,
         delailBloklar: yeniDelail,
         vefaSirasi: yeniVefa,
-        canliTikler: {} // Yeni günde tikler tertemiz sıfırlanır
+        canliTikler: {}
       }).then(() => {
-        alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi! Tüm cihazlarda güncellendi.`);
+        alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`);
         startPopupSequence();
       });
     }
@@ -799,18 +837,15 @@
 
       const tikler = liveState.canliTikler || {};
 
-      // Tarih ve Güncelleme Bilgisi
       document.getElementById("program-date-title").innerText = `📅 ${liveState.programTarihi || "11 Ekim 2026 Pazar"}`;
       document.getElementById("last-updated-text").innerText = `Son Güncelleme: ${liveState.sonGuncelleme || "11.10.2026 – 00:00"}`;
       document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[liveState.vefaSirasi || 0]}`;
 
-      // Âyet Bilgisi
       document.getElementById("banner-arabic").innerText = liveState.ezberAyet.arapca;
       document.getElementById("banner-meal").innerText = liveState.ezberAyet.meal;
       document.getElementById("popup-arabic").innerText = liveState.ezberAyet.arapca;
       document.getElementById("popup-meal").innerHTML = liveState.ezberAyet.meal;
 
-      // Başlıklar
       const kitap = liveState.kitapAdi || "İman ve Küfür Muvazeneleri (208 s.)";
       document.getElementById("risale-title").innerHTML = `📗 ${kitap} – ${liveState.gunSayaci || 2}. gün <span class="tag">Her gün +3 Sayfa</span>`;
       document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${liveState.sureHaftaSayaci || 13}. Hafta) <span class="tag">Haftalık Devir</span>`;
@@ -951,7 +986,7 @@
         `;
       }).join("");
 
-      // Yönetici Sayaç Güncellemesi
+      // Yönetici Sayaç Özeti
       if (isAdmin && totalTasks > 0) {
         const yuzde = Math.round((completedTasks / totalTasks) * 100);
         document.getElementById("admin-stats-text").innerText = `${completedTasks} / ${totalTasks} Görev Okundu (%${yuzde})`;
