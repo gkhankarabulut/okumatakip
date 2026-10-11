@@ -773,8 +773,9 @@
         </div>
       `).join("");
 
-      document.getElementById("current-date-title").innerText = `Günlük Okuma Takibi (Döngü Günü: ${liveState.gunSayaci || 2})`;
-      document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[liveState.vefaSirasi || 0]}`;
+    document.getElementById("current-date-title").innerText = "Günlük Okuma Takip Panosu";
+document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[liveState.vefaSirasi || 0]}`;
+document.getElementById("risale-title").innerHTML = `📗 İman ve Küfür Muvazeneleri (208 s.) – ${liveState.gunSayaci || 2}. gün <span class="tag">Her gün +3 Sayfa</span>`;
     }
 
     function startPopupSequence() {
