@@ -305,6 +305,27 @@
       color: #64748b;
       margin-top: 2px;
     }
+    /* ✨ MÜJDE BUTONU STİLİ */
+    .btn-mujde {
+      background: #fef3c7;
+      border: 1px solid #f59e0b;
+      color: #b45309;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: 10px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .btn-mujde:hover {
+      background: #fde68a;
+      transform: scale(1.05);
+    }
     .admin-switch-btn {
       display: block;
       margin: 25px auto 10px auto;
@@ -557,6 +578,19 @@
     </div>
   </div>
 
+  <!-- POP-UP: SÛRE MÜJDESİ VE FAZİLETİ -->
+  <div class="popup-overlay hidden" id="popup-mujde">
+    <div class="popup-box">
+      <div class="popup-header" id="mujde-modal-title">✨ Sûrenin Müjdesi ve Fazileti</div>
+      <div class="popup-content">
+        <div class="dua-box" id="mujde-modal-body" style="font-size: 15px; line-height: 1.8;"></div>
+      </div>
+      <div class="popup-footer">
+        <button class="btn-popup" onclick="document.getElementById('popup-mujde').classList.add('hidden')">Kapat ✕</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCjSWX_W2e91f87VWrSxARMvsB_kTHXI5o",
@@ -597,7 +631,6 @@
       }
     }
 
-    // SAYFA İÇİNDEN YÖNETİCİ GİRİŞİ / ÇIKIŞI YAPMA
     function toggleAdminPrompt() {
       if (isAdmin) {
         if (confirm("Yönetici modundan çıkıp normal kullanıcı moduna geçmek istiyor musunuz?")) {
@@ -661,6 +694,60 @@
       0: { baslik: "Meşhur Evliyalar", dosya: "pazar.jpg" }
     };
 
+    // SÛRE FAZİLET VE MÜJDE VERİTABANI
+    const sureMujdeleri = {
+      "Fetih": {
+        baslik: "✨ Fetih Sûresi Müjdesi",
+        metin: "Resûlullah (s.a.v.) şöyle buyurmuştur:<br><br><b>«Bu gece bana öyle bir sûre indirildi ki, o bana dünya ve dünyadaki her şeyden daha sevimlidir.»</b> (Buhârî, Tefsîr, 48/1)<br><br>Gazanfer-i İslâm olan ecdadımız da mühim fetihlerin arifesinde ve sefere çıkarken bu sûreyi okumayı adet edinmişlerdir."
+      },
+      "Mülk": {
+        baslik: "✨ Mülk (Tebâreke) Sûresi Müjdesi",
+        metin: "Peygamber Efendimiz (s.a.v.) buyurdu:<br><br><b>«Kur'ân'da otuz âyetlik bir sûre vardır; okuyan kimseye bağışlanıncaya kadar şefaat eder. O, Tebârekellezî bi-yedihi'l-mülk sûresidir.»</b> (Ebû Dâvûd, Ramazân 10; Tirmizî, Sevâbü'l-Kur'ân 9)<br><br>Ayrıca kabir azabına mâni olan koruyucu bir vesile olduğu bildirilmiştir."
+      },
+      "Yâsîn": {
+        baslik: "✨ Yâsîn Sûresi Müjdesi",
+        metin: "Fahr-i Kâinat Efendimiz (s.a.v.) buyurmuştur:<br><br><b>«Her şeyin bir kalbi vardır; Kur'ân'ın kalbi de Yâsîn'dir. Kim Allah rızasını ve âhiret yurdunu umarak Yâsîn okursa, geçmiş günahları bağışlanır.»</b> (Tirmizî, Sevâb, 7; Müsned, V/26)"
+      },
+      "Vâkıa": {
+        baslik: "✨ Vâkıa Sûresi Müjdesi",
+        metin: "Abdullah b. Mes'ûd (r.a.) rivayetiyle Resûlullah (s.a.v.) buyurdu:<br><br><b>«Kim her gece Vâkıa sûresini okursa, ona asla fakirlik ve darlık isabet etmez.»</b> (Beyhakî, Şuabü'l-Îmân, 2269)"
+      },
+      "Rahmân": {
+        baslik: "✨ Rahmân Sûresi Müjdesi",
+        metin: "Peygamberimiz (s.a.v.) buyurmuştur:<br><br><b>«Her şeyin bir ziyneti ve gelini vardır. Kur'ân'ın gelini (ziyneti) ise Rahmân Sûresi'dir.»</b> (Beyhakî, Şuabü'l-Îmân, 2266)"
+      },
+      "Duhân": {
+        baslik: "✨ Duhân Sûresi Müjdesi",
+        metin: "Efendimiz (s.a.v.) buyurdu:<br><br><b>«Kim cuma gecesi Duhân sûresini okursa, yetmiş bin melek sabaha kadar onun için istiğfar eder ve bağışlanmış olarak sabahlar.»</b> (Tirmizî, Sevâb, 8)"
+      },
+      "Secde": {
+        baslik: "✨ Secde Sûresi Müjdesi",
+        metin: "Câbir (r.a.) anlatıyor:<br><br><b>«Resûlullah (s.a.v.), Secde ve Mülk sûrelerini okumadan gece uyumazdı.»</b> (Tirmizî, Sevâbü'l-Kur'ân, 9; Müsned, III/340)"
+      },
+      "Cuma": {
+        baslik: "✨ Cuma Sûresi Müjdesi",
+        metin: "Rivayette bildirilmiştir ki:<br><br><b>«Cuma sûresini vird edinen kimseye, müslüman şehirlerinde cuma namazına giden ve gitmeyen kimselerin adedince ecir ve sevap ihsan olunur.»</b>"
+      },
+      "Saff": {
+        baslik: "✨ Saff Sûresi Müjdesi",
+        metin: "Rivayet edilmiştir ki:<br><br><b>«Kim Saff sûresini okumaya devam ederse, Hazret-i Îsâ (a.s.) dünyada kaldığı müddetçe ona dua ve istiğfarda bulunur ve kıyamet gününde onun refiki olur.»</b>"
+      },
+      "Tekvîr": {
+        baslik: "✨ Tekvîr, İnfitâr ve İnşikâk Sûreleri Müjdesi",
+        metin: "İbn Ömer (r.a.) naklediyor, Peygamber Efendimiz (s.a.v.) buyurdu:<br><br><b>«Kim kıyamet gününü gözleriyle görüyormuş gibi müşahede etmek isterse; Tekvîr, İnfitâr ve İnşikâk sûrelerini okusun.»</b> (Tirmizî, Tefsîr, 81; Müsned, II/27)"
+      }
+    };
+
+    function showMujde(event, sureTamAd) {
+      event.stopPropagation();
+      let key = Object.keys(sureMujdeleri).find(k => sureTamAd.includes(k));
+      if (!key) key = "Tekvîr";
+      const m = sureMujdeleri[key];
+      document.getElementById("mujde-modal-title").innerHTML = m.baslik;
+      document.getElementById("mujde-modal-body").innerHTML = m.metin;
+      document.getElementById("popup-mujde").classList.remove("hidden");
+    }
+
     const defaultState = {
       programTarihi: "11 Ekim 2026 Pazar",
       sonGuncelleme: "11.10.2026 – 00:00",
@@ -717,12 +804,11 @@
 
     let liveState = defaultState;
 
-stateRef.on("value", (snapshot) => {
+    stateRef.on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) {
         stateRef.set(defaultState);
       } else {
-        // Eksik alanları defaultState ile tamamla
         liveState = {
           ...defaultState,
           ...data,
@@ -769,7 +855,6 @@ stateRef.on("value", (snapshot) => {
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
 
-    // 1. GÜNLÜK İLERLEME (Risale +3, Tahmidiye İleri, Delail İleri, Vefa +1, Tikleri Sıfırla)
     function advanceToNextDay() {
       if (!confirm("Günü ilerletmek istiyor musunuz?")) return;
 
@@ -779,11 +864,9 @@ stateRef.on("value", (snapshot) => {
         bitir: item.bitir + 3
       }));
 
-      // İLERİYE DEVİR (10-12 okuyan 13-16'ya geçer)
       const yeniTahmidiye = [...liveState.tahmidiyeBloklar];
       yeniTahmidiye.push(yeniTahmidiye.shift());
 
-      // İLERİYE DEVİR (8-9 okuyan 10-15'e geçer)
       const yeniDelail = [...liveState.delailBloklar];
       yeniDelail.push(yeniDelail.shift());
 
@@ -805,7 +888,6 @@ stateRef.on("value", (snapshot) => {
       });
     }
 
-    // 2. HAFTALIK İLERLEME (Kur'ân +20 Sayfa, Sûre Nöbetleri Devri)
     function advanceToNextWeek() {
       if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân +20 sayfa artacak ve sûreler devredecek.")) return;
 
@@ -958,7 +1040,7 @@ stateRef.on("value", (snapshot) => {
         `;
       }).join("");
 
-      // 6. Sure
+      // 6. Sure (Müjde Butonu Entegre Edildi)
       document.getElementById("list-sure").innerHTML = (liveState.sureNobetleri || []).map((s, idx) => {
         const id = 'sur_' + idx;
         checkCounter(id);
@@ -971,6 +1053,7 @@ stateRef.on("value", (snapshot) => {
                 <div class="meta">${s.s}</div>
               </div>
             </div>
+            <button class="btn-mujde" onclick="showMujde(event, '${s.s.replace(/'/g, "\\'")}')">✨ Müjde</button>
           </div>
         `;
       }).join("");
