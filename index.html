@@ -9,6 +9,9 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
+  <!-- Dava Adamının Notları Harici Dosyası -->
+  <script src="notlar.js"></script>
+
   <style>
     :root {
       --primary: #064e3b;
@@ -305,7 +308,6 @@
       color: #64748b;
       margin-top: 2px;
     }
-    /* ✨ MÜJDE BUTONU STİLİ */
     .btn-mujde {
       background: #fef3c7;
       border: 1px solid #f59e0b;
@@ -513,7 +515,7 @@
     <button class="admin-switch-btn" id="admin-switch-btn" onclick="toggleAdminPrompt()">🔑 Yönetici Girişi Yap</button>
   </div>
 
-  <!-- POP-UP 1 -->
+  <!-- POP-UP 1: Kabul Duası -->
   <div class="popup-overlay hidden" id="popup-1">
     <div class="popup-box">
       <div class="popup-header">🤲 Allah Kabul Etsin</div>
@@ -531,7 +533,7 @@
     </div>
   </div>
 
-  <!-- POP-UP 2 -->
+  <!-- POP-UP 2: Görsel Kartı -->
   <div class="popup-overlay hidden" id="popup-2">
     <div class="popup-box">
       <div class="popup-header" id="popup-2-title">Günün Manevi Kartı</div>
@@ -542,7 +544,7 @@
     </div>
   </div>
 
-  <!-- POP-UP 3 -->
+  <!-- POP-UP 3: Vefa Duası -->
   <div class="popup-overlay hidden" id="popup-3">
     <div class="popup-box">
       <div class="popup-header">🌹 Günün Vefa Duası</div>
@@ -560,8 +562,29 @@
     </div>
   </div>
 
-  <!-- POP-UP 4 -->
+  <!-- POP-UP 4: Bir Dava Adamının Notları -->
   <div class="popup-overlay hidden" id="popup-4">
+    <div class="popup-box">
+      <div class="popup-header">📝 Bir Dava Adamının Notları</div>
+      <div class="popup-content">
+        <p style="font-size: 13px; color: var(--gold); font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+          Günün İrşad ve İstikamet Düsturu
+        </p>
+        <div class="dua-box" id="dava-notu-metin" style="font-size: 16px; line-height: 1.8; color: #1e293b; background: #fffbeb; border-color: var(--gold);">
+          ...
+        </div>
+        <p style="text-align: right; margin-top: 10px; font-size: 13px; color: #64748b; font-style: italic;">
+          — Merhum Zübeyir Gündüzalp
+        </p>
+      </div>
+      <div class="popup-footer">
+        <button class="btn-popup" onclick="nextPopup(4)">Devam Et ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POP-UP 5: Ezber Âyeti -->
+  <div class="popup-overlay hidden" id="popup-5">
     <div class="popup-box">
       <div class="popup-header">📿 Bu Haftanın Ezber Âyeti</div>
       <div class="popup-content" style="text-align: center;">
@@ -694,7 +717,6 @@
       0: { baslik: "Meşhur Evliyalar", dosya: "pazar.jpg" }
     };
 
-    // SÛRE FAZİLET VE MÜJDE VERİTABANI
     const sureMujdeleri = {
       "Fetih": {
         baslik: "✨ Fetih Sûresi Müjdesi",
@@ -1040,7 +1062,7 @@
         `;
       }).join("");
 
-      // 6. Sure (Müjde Butonu Entegre Edildi)
+      // 6. Sure (Müjde Butonlu)
       document.getElementById("list-sure").innerHTML = (liveState.sureNobetleri || []).map((s, idx) => {
         const id = 'sur_' + idx;
         checkCounter(id);
@@ -1100,6 +1122,14 @@
         `;
       } else if (nextId === 3) {
         document.getElementById("vefa-abi-name").innerText = vefaListesi[liveState.vefaSirasi || 0];
+      } else if (nextId === 4) {
+        // Dava Adamının Notları Vecizesi
+        if (typeof davaNotlari !== "undefined" && davaNotlari.length > 0) {
+          const index = ((liveState.gunSayaci || 2) - 1) % davaNotlari.length;
+          document.getElementById("dava-notu-metin").innerHTML = `"${davaNotlari[index]}"`;
+        } else {
+          document.getElementById("dava-notu-metin").innerHTML = `"Hizmet, hizmet derken şahsî dersini unutanın, hizmeti muvakkat olur. Şimdi oku, kabirde okuyamazsın."`;
+        }
       }
 
       document.getElementById(`popup-${nextId}`).classList.remove("hidden");
