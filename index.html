@@ -463,9 +463,10 @@
         <div class="meta-text" id="last-updated-text">Son Güncelleme: 11.10.2026 – 00:00</div>
         <div class="meta-text" style="color:var(--primary); font-weight:600; margin-top:4px;" id="sub-info">Bugün Vefa Duası: Yusuf Sarıoğlu Abi</div>
       </div>
-      <div class="btn-group" id="admin-actions-group" style="display:none;">
+     <div class="btn-group" id="admin-actions-group" style="display:none;">
         <button class="btn-admin" onclick="advanceToNextDay()">🌙 Sonraki Güne Geç</button>
         <button class="btn-admin btn-week" onclick="advanceToNextWeek()">🗓️ Yeni Haftaya Geç</button>
+        <button class="btn-admin" style="background:#0284c7;" onclick="advanceToNextBook()">📚 Yeni Kitaba Geç</button>
       </div>
     </div>
 
@@ -1135,9 +1136,77 @@
       document.getElementById(`popup-${nextId}`).classList.remove("hidden");
     }
 
-    function closeAllPopups() {
+  function closeAllPopups() {
       document.querySelectorAll(".popup-overlay").forEach(el => el.classList.add("hidden"));
     }
+
+    // --- YENİ EKLENEN KİTAP GEÇİŞ SİSTEMİ ---
+    const kitapListesi = [
+      { ad: "Mektubat", sayfa: 575 },
+      { ad: "Lemalar", sayfa: 498 },
+      { ad: "Barla Lahikası", sayfa: 397 },
+      { ad: "Şualar", sayfa: 653 },
+      { ad: "Mesnevi-i Nuriye", sayfa: 271 },
+      { ad: "Asa-yı Musa", sayfa: 251 },
+      { ad: "Kastamonu Lahikası", sayfa: 254 },
+      { ad: "İşaret-ü'l İ'caz", sayfa: 324 },
+      { ad: "Sikke-i Tasdik-i Gaybi", sayfa: 269 },
+      { ad: "Tarihçe-i Hayat", sayfa: 719 },
+      { ad: "Muhakemat", sayfa: 143 },
+      { ad: "Sözler", sayfa: 862 },
+      { ad: "Emirdağ Lahikası-1", sayfa: 302 },
+      { ad: "Emirdağ Lahikası-2", sayfa: 257 },
+      { ad: "İman ve Küfür Muvazeneleri", sayfa: 208 }
+    ];
+
+    function advanceToNextBook() {
+      if (!confirm("Sıradaki kitaba geçmek istiyor musunuz? İsimlerin ve sayfaların dağılımı otomatik yapılacaktır.")) return;
+
+      let currentKitapAdi = liveState.kitapAdi.split(" (")[0]; 
+      let currentIndex = kitapListesi.findIndex(k => k.ad === currentKitapAdi);
+      
+      let nextIndex = currentIndex + 1;
+      let isNewTur = false;
+      
+      if (nextIndex >= kitapListesi.length || currentIndex === -1) {
+        nextIndex = 0;
+        isNewTur = true;
+      }
+      
+      const nextKitap = kitapListesi[nextIndex];
+      let isimler = liveState.risaleSayfalari.map(item => item.isim);
+      
+      if (isNewTur) {
+        let sonKisi = isimler.pop();
+        isimler.unshift(sonKisi);
+        alert("Yeni Tura geçildi! İsimler bir sıra kaydırıldı. İlk sıraya " + sonKisi + " geldi.");
+      }
+      
+      let kisiSayisi = isimler.length;
+      let blokSayfa = Math.ceil(nextKitap.sayfa / kisiSayisi);
+      
+      let yeniRisale = isimler.map((kisi, index) => {
+        let baslangic = (index * blokSayfa) + 1;
+        let max = Math.min((index + 1) * blokSayfa, nextKitap.sayfa);
+        return {
+          isim: kisi,
+          basla: baslangic,
+          bitir: baslangic + 2, 
+          max: max
+        };
+      });
+      
+      stateRef.update({
+        kitapAdi: `${nextKitap.ad} (${nextKitap.sayfa} s.)`,
+        gunSayaci: 1,
+        sonGuncelleme: formatNow(),
+        risaleSayfalari: yeniRisale,
+        canliTikler: {}
+      }).then(() => {
+        alert(`Başarıyla ${nextKitap.ad} kitabına geçildi ve herkese sayfaları dağıtıldı!`);
+      });
+    }
+    // --- YENİ EKLENEN KİTAP GEÇİŞ SİSTEMİ SONU ---
 
     window.addEventListener("DOMContentLoaded", () => {
       applyAdminUI();
