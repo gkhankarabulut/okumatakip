@@ -421,6 +421,29 @@
     @media(min-width: 480px) {
       .btn-popup { width: auto; }
     }
+
+    /* --- ŞAHSİ HEDEFLER MODÜLÜ CSS --- */
+    .sahsi-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin: 20px auto; }
+    .sahsi-baslik-alani { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px; }
+    .btn-ana-ekle { background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; font-weight: bold; }
+    .sahsi-kisi-satiri { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px dashed #e5e7eb; }
+    .bos-durum { text-align: center; color: #6b7280; font-size: 0.95rem; padding: 20px 0; }
+    .sahsi-hedef-listesi { display: flex; flex-direction: column; margin-top: 5px; width: 100%; align-items: flex-start; }
+    .sahsi-hedef-satiri { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 8px; font-size: 0.95rem; text-align: left; background: #f9fafb; padding: 6px 10px; border-radius: 8px; }
+    .sahsi-hedef-sol { display: flex; align-items: center; }
+    .sahsi-hedef-sol input[type="checkbox"] { transform: scale(1.3); margin-right: 12px; accent-color: #10b981; cursor: pointer; flex-shrink: 0; }
+    .sahsi-hedef-aksiyonlar { display: flex; gap: 5px; margin-left: 10px; flex-shrink: 0; }
+    .btn-kucuk { background: #e5e7eb; color: #374151; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; font-weight: bold; transition: 0.2s; }
+    .btn-kucuk.ileri { background: #dbeafe; color: #1d4ed8; }
+    .btn-kucuk.geri { background: #fef3c7; color: #d97706; }
+    .btn-kucuk.sil { background: #fee2e2; color: #b91c1c; }
+    .btn-ekle { background: #0ea5e9; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; height: fit-content; flex-shrink: 0; margin-left: 15px;}
+    .sahsi-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .sahsi-modal { background: white; padding: 20px; border-radius: 12px; width: 90%; max-width: 320px; max-height: 90vh; overflow-y: auto;}
+    .sahsi-input-grup { margin-bottom: 15px; text-align: left; }
+    .sahsi-input-grup label { display: block; font-size: 0.85rem; margin-bottom: 5px; font-weight: bold; }
+    .sahsi-input-grup select, .sahsi-input-grup input[type="text"], .sahsi-input-grup input[type="number"] { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    .btn-kaydet { background: #f59e0b; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;}
   </style>
 </head>
 <body>
@@ -514,7 +537,18 @@
 
     <!-- Sayfa Altı Kolay Giriş / Çıkış Butonu -->
     <button class="admin-switch-btn" id="admin-switch-btn" onclick="toggleAdminPrompt()">🔑 Yönetici Girişi Yap</button>
-  </div>
+
+    <!-- ŞAHSİ HEDEFLER BÖLÜMÜ (EN ALT) -->
+    <div class="sahsi-card">
+      <div class="sahsi-baslik-alani">
+        <h2 style="font-size:1.2rem; margin:0;">🎯 Şahsi Okumalar ve Görevler</h2>
+        <button class="btn-ana-ekle" onclick="kisiModalAc()">👤 Kişi Ekle</button>
+      </div>
+      <div id="sahsi-liste-alani">
+        <div class="bos-durum">Sistem yükleniyor...</div>
+      </div>
+    </div>
+  </div> <!-- Container Bitişi -->
 
   <!-- POP-UP 1: Kabul Duası -->
   <div class="popup-overlay hidden" id="popup-1">
@@ -615,7 +649,83 @@
     </div>
   </div>
 
+  <!-- ŞAHSİ HEDEFLER MODALLARI -->
+  <div class="sahsi-modal-overlay" id="kisi-modal">
+    <div class="sahsi-modal">
+      <h3 style="margin-top:0; text-align:left;">Programa Başla</h3>
+      <div class="sahsi-input-grup">
+        <label>İsminiz</label>
+        <input type="text" id="yeni-kisi-isim" placeholder="Adınızı girin...">
+      </div>
+      <button class="btn-kaydet" style="background:#10b981;" onclick="sahsiKisiKaydet()">Ekle ve Başla</button>
+      <button style="background:transparent; border:none; width:100%; margin-top:10px; color:#6b7280; cursor:pointer;" onclick="kisiModalKapat()">İptal</button>
+    </div>
+  </div>
+
+  <div class="sahsi-modal-overlay" id="hedef-modal">
+    <div class="sahsi-modal">
+      <h3 style="margin-top:0; text-align:left;" id="modal-baslik">Program Ekle</h3>
+      <div class="sahsi-input-grup">
+        <label>Kategori (Ne Tür Bir Hedef?)</label>
+        <select id="program-secimi" onchange="sahsiProgramDegisti()">
+          <option value="Hatim">Hatim (Kur'ân)</option>
+          <option value="Sabit Cüz">Sabit Cüz</option>
+          <option value="Risale">Risale-i Nur</option>
+          <option value="İlave Okuma">İlave Okuma (Cevşen, Evrad vb.)</option>
+          <option value="Diğer (Görev)">Ders/Faaliyet (Okuma Dışı Görev)</option>
+        </select>
+      </div>
+      <div class="sahsi-input-grup">
+        <label>Özel İsim / Not (İsteğe Bağlı)</label>
+        <input type="text" id="ozel-isim" placeholder="Örn: Sabah Hatmi, Derse Katılım...">
+      </div>
+      <div class="sahsi-input-grup" id="risale-kitap-grubu" style="display:none;">
+        <label>Kitap Seçimi</label>
+        <select id="risale-kitap">
+          <option value="Sözler">Sözler</option>
+          <option value="Mektubat">Mektubat</option>
+          <option value="Lem'alar">Lem'alar</option>
+          <option value="Şualar">Şualar</option>
+          <option value="Tarihçe-i Hayat">Tarihçe-i Hayat</option>
+        </select>
+      </div>
+      <div class="sahsi-input-grup">
+        <label>Periyot</label>
+        <select id="periyot">
+          <option value="Günlük">Günlük</option>
+          <option value="Haftalık">Haftalık</option>
+          <option value="Aylık">Aylık</option>
+        </select>
+      </div>
+      <div id="okuma-alanlari">
+        <div class="sahsi-input-grup" id="okuma-turu-grubu">
+          <label>Okuma Birimi</label>
+          <select id="okuma-turu" onchange="sahsiEtiketleriGuncelle()">
+            <option value="Sayfa">Sayfa</option>
+            <option value="Cüz">Cüz</option>
+            <option value="Adet">Adet</option>
+          </select>
+        </div>
+        <div class="sahsi-input-grup" id="miktar-grubu">
+          <label id="lbl-miktar">Kaç Sayfa Okunacak?</label>
+          <input type="number" id="miktar" value="20" min="1">
+        </div>
+        <div class="sahsi-input-grup" id="baslangic-grubu">
+          <label id="lbl-baslangic">Kaldığın Yer / Başlangıç</label>
+          <input type="number" id="baslangic" value="1" min="1">
+        </div>
+      </div>
+      <div class="sahsi-input-grup" id="gorev-grubu" style="display:none;">
+        <label>Ne Yapılacak? (Görev Tanımı)</label>
+        <input type="text" id="gorev-metni" placeholder="Örn: Haftada 3 defa derse katıl">
+      </div>
+      <button class="btn-kaydet" onclick="sahsiHedefiKaydet()">Kaydet</button>
+      <button style="background:transparent; border:none; width:100%; margin-top:10px; color:#6b7280; cursor:pointer;" onclick="sahsiModalKapat()">İptal</button>
+    </div>
+  </div>
+
   <script>
+    // --- ANA PROJE JAVASCRIPT ---
     const firebaseConfig = {
       apiKey: "AIzaSyCjSWX_W2e91f87VWrSxARMvsB_kTHXI5o",
       authDomain: "okumatakip-f3db1.firebaseapp.com",
@@ -1124,7 +1234,6 @@
       } else if (nextId === 3) {
         document.getElementById("vefa-abi-name").innerText = vefaListesi[liveState.vefaSirasi || 0];
       } else if (nextId === 4) {
-        // Dava Adamının Notları Vecizesi
         if (typeof davaNotlari !== "undefined" && davaNotlari.length > 0) {
           const index = ((liveState.gunSayaci || 2) - 1) % davaNotlari.length;
           document.getElementById("dava-notu-metin").innerHTML = `"${davaNotlari[index]}"`;
@@ -1136,11 +1245,10 @@
       document.getElementById(`popup-${nextId}`).classList.remove("hidden");
     }
 
-  function closeAllPopups() {
+    function closeAllPopups() {
       document.querySelectorAll(".popup-overlay").forEach(el => el.classList.add("hidden"));
     }
 
-    // --- YENİ EKLENEN KİTAP GEÇİŞ SİSTEMİ ---
     const kitapListesi = [
       { ad: "Mektubat", sayfa: 575 },
       { ad: "Lemalar", sayfa: 498 },
@@ -1206,7 +1314,6 @@
         alert(`Başarıyla ${nextKitap.ad} kitabına geçildi ve herkese sayfaları dağıtıldı!`);
       });
     }
-    // --- YENİ EKLENEN KİTAP GEÇİŞ SİSTEMİ SONU ---
 
     window.addEventListener("DOMContentLoaded", () => {
       applyAdminUI();
@@ -1215,6 +1322,226 @@
         startPopupSequence();
       }
     });
+
+    /* --- ŞAHSİ HEDEFLER JAVASCRIPT --- */
+    let sahsiAbiler = [];
+    let sahsiSeciliKisi = null;
+
+    firebase.database().ref('sahsi_okumalar').on('value', (snapshot) => {
+      sahsiAbiler = [];
+      const data = snapshot.val();
+      if (data) {
+        Object.keys(data).forEach(key => {
+          let kisi = data[key];
+          kisi.id = key;
+          if (!kisi.hedefler) kisi.hedefler = [];
+          sahsiAbiler.push(kisi);
+        });
+      }
+      sahsiEkraniGuncelle();
+    });
+
+    function sahsiKisiKaydet() {
+      const isim = document.getElementById("yeni-kisi-isim").value.trim();
+      if (isim !== "") {
+        firebase.database().ref('sahsi_okumalar').push({ isim: isim, hedefler: [] });
+        kisiModalKapat();
+      } else { alert("Lütfen bir isim giriniz."); }
+    }
+
+    function sahsiHedefiKaydet() {
+      const progSecimi = document.getElementById("program-secimi").value;
+      const ozelIsimInput = document.getElementById("ozel-isim").value.trim();
+      let gosterimAdi = progSecimi;
+      
+      if (progSecimi === "Risale") gosterimAdi = "Risale: " + document.getElementById("risale-kitap").value;
+      if (ozelIsimInput !== "") gosterimAdi = ozelIsimInput;
+      else if (progSecimi === "İlave Okuma") gosterimAdi = "İlave Okuma"; 
+      else if (progSecimi === "Diğer (Görev)") gosterimAdi = "Görev";
+      
+      const periyot = document.getElementById("periyot").value;
+      let tur = "", miktar = 1, baslangic = 1, gorevMetni = "";
+
+      if (progSecimi === "Diğer (Görev)") {
+        gorevMetni = document.getElementById("gorev-metni").value.trim() || "Belirtilmedi";
+      } else {
+        if (progSecimi === "Sabit Cüz") tur = "Cüz";
+        else if (progSecimi === "Risale") tur = "Sayfa";
+        else tur = document.getElementById("okuma-turu").value;
+
+        miktar = (progSecimi === "Sabit Cüz") ? 1 : parseInt(document.getElementById("miktar").value);
+        baslangic = parseInt(document.getElementById("baslangic").value);
+      }
+
+      sahsiAbiler[sahsiSeciliKisi].hedefler.push({ 
+        asliProgram: progSecimi, gosterimAdi: gosterimAdi, periyot: periyot, 
+        tur: tur, miktar: miktar, baslangic: baslangic, gorevMetni: gorevMetni, tikli: false 
+      });
+      
+      sahsiHedefGuncelleDB(sahsiSeciliKisi);
+      sahsiModalKapat();
+    }
+
+    function sahsiTikDegistir(kisiIndex, hedefIndex, durum) { 
+      sahsiAbiler[kisiIndex].hedefler[hedefIndex].tikli = durum;
+      sahsiHedefGuncelleDB(kisiIndex);
+    }
+
+    function sahsiHedefIlerlet(kisiIndex, hedefIndex) {
+      let hedef = sahsiAbiler[kisiIndex].hedefler[hedefIndex];
+      hedef.baslangic += hedef.miktar;
+      if (hedef.asliProgram === "Hatim") {
+        if (hedef.tur === "Cüz" && hedef.baslangic > 30) hedef.baslangic = (hedef.baslangic % 30) || 30;
+        else if (hedef.tur === "Sayfa" && hedef.baslangic > 604) hedef.baslangic = (hedef.baslangic % 604) || 604;
+      }
+      hedef.tikli = false;
+      sahsiHedefGuncelleDB(kisiIndex);
+    }
+
+    function sahsiHedefGeriAl(kisiIndex, hedefIndex) {
+      let hedef = sahsiAbiler[kisiIndex].hedefler[hedefIndex];
+      hedef.baslangic -= hedef.miktar;
+      if (hedef.asliProgram === "Hatim") {
+        if (hedef.tur === "Cüz") { while (hedef.baslangic < 1) hedef.baslangic += 30; } 
+        else if (hedef.tur === "Sayfa") { while (hedef.baslangic < 1) hedef.baslangic += 604; }
+      } else {
+        if (hedef.baslangic < 1) hedef.baslangic = 1;
+      }
+      hedef.tikli = false;
+      sahsiHedefGuncelleDB(kisiIndex);
+    }
+
+    function sahsiHedefSil(kisiIndex, hedefIndex) {
+      if(confirm("Bu programı silmek istediğinize emin misiniz?")) {
+        sahsiAbiler[kisiIndex].hedefler.splice(hedefIndex, 1);
+        sahsiHedefGuncelleDB(kisiIndex);
+      }
+    }
+
+    function sahsiKisiSil(kisiIndex) {
+      if(confirm("Bu kişiyi ve tüm hedeflerini listeden silmek istediğinize emin misiniz?")) {
+        firebase.database().ref('sahsi_okumalar/' + sahsiAbiler[kisiIndex].id).remove();
+      }
+    }
+
+    function sahsiHedefGuncelleDB(kisiIndex) {
+      firebase.database().ref('sahsi_okumalar/' + sahsiAbiler[kisiIndex].id + '/hedefler').set(sahsiAbiler[kisiIndex].hedefler);
+    }
+
+    function kisiModalAc() {
+      document.getElementById("yeni-kisi-isim").value = "";
+      document.getElementById("kisi-modal").style.display = "flex";
+    }
+    function kisiModalKapat() { document.getElementById("kisi-modal").style.display = "none"; }
+    function sahsiModalKapat() { document.getElementById("hedef-modal").style.display = "none"; }
+
+    function sahsiModalAc(index) {
+      sahsiSeciliKisi = index;
+      document.getElementById("modal-baslik").innerText = sahsiAbiler[index].isim + " - Program Ekle";
+      document.getElementById("ozel-isim").value = ""; 
+      document.getElementById("program-secimi").value = "Hatim"; 
+      document.getElementById("periyot").value = "Günlük"; 
+      document.getElementById("gorev-metni").value = "";
+      sahsiProgramDegisti();
+      document.getElementById("hedef-modal").style.display = "flex";
+    }
+
+    function sahsiProgramDegisti() {
+      const prog = document.getElementById("program-secimi").value;
+      document.getElementById("risale-kitap-grubu").style.display = (prog === "Risale") ? "block" : "none";
+      if (prog === "Diğer (Görev)") {
+        document.getElementById("okuma-alanlari").style.display = "none";
+        document.getElementById("gorev-grubu").style.display = "block";
+      } else {
+        document.getElementById("okuma-alanlari").style.display = "block";
+        document.getElementById("gorev-grubu").style.display = "none";
+        if (prog === "Sabit Cüz") {
+          document.getElementById("okuma-turu-grubu").style.display = "none";
+          document.getElementById("miktar-grubu").style.display = "none";
+          document.getElementById("lbl-baslangic").innerText = "Sabit Cüz No (1-30)";
+          document.getElementById("baslangic").max = "30";
+        } else if (prog === "Risale") {
+          document.getElementById("okuma-turu-grubu").style.display = "none"; 
+          document.getElementById("miktar-grubu").style.display = "block";
+          document.getElementById("lbl-miktar").innerText = "Kaç Sayfa Okunacak?";
+          document.getElementById("lbl-baslangic").innerText = "Kaldığın Sayfa";
+          document.getElementById("baslangic").removeAttribute("max");
+          document.getElementById("miktar").value = 10;
+        } else {
+          document.getElementById("okuma-turu-grubu").style.display = "block";
+          document.getElementById("miktar-grubu").style.display = "block";
+          document.getElementById("baslangic").removeAttribute("max");
+          sahsiEtiketleriGuncelle();
+        }
+      }
+    }
+
+    function sahsiEtiketleriGuncelle() {
+      const prog = document.getElementById("program-secimi").value;
+      if (prog === "Sabit Cüz" || prog === "Risale" || prog === "Diğer (Görev)") return;
+      const tur = document.getElementById("okuma-turu").value;
+      if (tur === "Sayfa") {
+        document.getElementById("lbl-miktar").innerText = "Kaç Sayfa Okunacak?";
+        document.getElementById("lbl-baslangic").innerText = "Kaldığın Sayfa No";
+      } else if (tur === "Cüz") {
+        document.getElementById("lbl-miktar").innerText = "Kaç Cüz Okunacak?";
+        document.getElementById("lbl-baslangic").innerText = "Başlangıç Cüz No";
+      } else {
+        document.getElementById("lbl-miktar").innerText = "Miktar / Adet";
+        document.getElementById("lbl-baslangic").innerText = "Başlangıç Sırası";
+      }
+    }
+
+    function sahsiEkraniGuncelle() {
+      const alan = document.getElementById("sahsi-liste-alani");
+      alan.innerHTML = "";
+      if (sahsiAbiler.length === 0) {
+        alan.innerHTML = `<div class="bos-durum">Henüz kimse eklenmedi. Başlamak için yukarıdaki <b>Kişi Ekle</b> butonuna tıklayın.</div>`;
+        return;
+      }
+      
+      sahsiAbiler.forEach((abi, kisiIndex) => {
+        let div = document.createElement("div");
+        div.className = "sahsi-kisi-satiri";
+        
+        let solTaraf = document.createElement("div");
+        solTaraf.style.display = "flex"; solTaraf.style.flexDirection = "column"; solTaraf.style.alignItems = "flex-start"; solTaraf.style.flexGrow = "1";
+        
+        solTaraf.innerHTML = `<div style="display:flex; align-items:center; margin-bottom:5px;"><strong>${abi.isim}</strong><button style="background:transparent; border:none; color:#dc2626; font-size:0.75rem; cursor:pointer; margin-left:10px;" onclick="sahsiKisiSil(${kisiIndex})">(Kişiyi Sil)</button></div>`;
+        
+        let hedefListesiDiv = document.createElement("div");
+        hedefListesiDiv.className = "sahsi-hedef-listesi";
+        
+        if (abi.hedefler.length > 0) {
+          abi.hedefler.forEach((hedef, hedefIndex) => {
+            let hDiv = document.createElement("div");
+            hDiv.className = "sahsi-hedef-satiri";
+            
+            let gosterimMetni = "", aksiyonButonlari = "";
+            if (hedef.asliProgram === "Sabit Cüz") {
+              gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} (Sabit: <b style="color:#0ea5e9">${hedef.baslangic}. Cüz</b>)`;
+              aksiyonButonlari = `<button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
+            } else if (hedef.asliProgram === "Diğer (Görev)") {
+              gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} (Görev: <b style="color:#0ea5e9">${hedef.gorevMetni}</b>)`;
+              aksiyonButonlari = `<button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
+            } else { 
+              let okumaBirimi = (hedef.asliProgram === "Risale") ? "Sayfa" : hedef.tur;
+              let sayfaEki = (hedef.asliProgram === "Risale") ? ". Sayfa" : "";
+              gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} ${hedef.miktar} ${okumaBirimi} (Devam eden: <b style="color:#0ea5e9">${hedef.baslangic}${sayfaEki}</b>)`;
+              aksiyonButonlari = `<button class="btn-kucuk geri" onclick="sahsiHedefGeriAl(${kisiIndex}, ${hedefIndex})">⏮️ Geri</button><button class="btn-kucuk ileri" onclick="sahsiHedefIlerlet(${kisiIndex}, ${hedefIndex})">⏭️ İlerle</button><button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
+            }
+            hDiv.innerHTML = `<div class="sahsi-hedef-sol"><input type="checkbox" ${hedef.tikli ? "checked" : ""} onchange="sahsiTikDegistir(${kisiIndex}, ${hedefIndex}, this.checked)"><span style="color:#4b5563;">${gosterimMetni}</span></div><div class="sahsi-hedef-aksiyonlar">${aksiyonButonlari}</div>`;
+            hedefListesiDiv.appendChild(hDiv);
+          });
+        } else { hedefListesiDiv.innerHTML = `<em style="color:#9ca3af; font-size:0.85rem; margin-left:10px;">(Henüz program eklenmedi)</em>`; }
+        
+        solTaraf.appendChild(hedefListesiDiv);
+        let sagTaraf = document.createElement("div");
+        sagTaraf.innerHTML = `<button class="btn-ekle" onclick="sahsiModalAc(${kisiIndex})">➕ Ekle</button>`;
+        div.appendChild(solTaraf); div.appendChild(sagTaraf);
+        alan.appendChild(div);
+      });
+    }
   </script>
 </body>
 </html>
