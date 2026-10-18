@@ -482,20 +482,22 @@
     <!-- Başlık ve Yönetici Butonları -->
     <div class="header-actions">
       <div class="date-info">
-        <h2 id="program-date-title">📅 19 Ekim 2026 Pazartesi</h2>
-        <div class="meta-text" id="last-updated-text">Son Güncelleme: 19.10.2026 – 00:00</div>
-        <div class="meta-text" style="color:var(--primary); font-weight:600; margin-top:4px;" id="sub-info">Bugün Vefa Duası: Yusuf Sarıoğlu Abi</div>
+        <h2 id="program-date-title">📅 Yükleniyor...</h2>
+        <div class="meta-text" id="last-updated-text">Son Güncelleme: ...</div>
+        <div class="meta-text" style="color:var(--primary); font-weight:600; margin-top:4px;" id="sub-info">Bugün Vefa Duası: ...</div>
       </div>
      <div class="btn-group" id="admin-actions-group" style="display:none;">
         <button class="btn-admin" onclick="advanceToNextDay()">🌙 Sonraki Güne Geç</button>
         <button class="btn-admin btn-week" onclick="advanceToNextWeek()">🗓️ Yeni Haftaya Geç</button>
         <button class="btn-admin" style="background:#0284c7;" onclick="advanceToNextBook()">📚 Yeni Kitaba Geç</button>
+        <!-- CEVŞEN DÜZELTME BUTONU EKLENDİ -->
+        <button class="btn-admin" style="background:#8b5cf6;" onclick="shiftCevsenOnly()">📿 Cevşeni Kaydır</button>
       </div>
     </div>
 
     <!-- 1. Risale-i Nur -->
     <div class="section-card">
-      <h3 id="risale-title">📗 3. Devir: Mektubat (575 s.) – 1. gün <span class="tag">Her gün +3 Sayfa</span></h3>
+      <h3 id="risale-title">📗 Yükleniyor... <span class="tag">Her gün +3 Sayfa</span></h3>
       <div class="task-list" id="list-risale"></div>
     </div>
 
@@ -525,13 +527,13 @@
 
     <!-- 6. Sure Nöbetleri -->
     <div class="section-card">
-      <h3 id="sure-title">📖 Sure Nöbetleri (14. Hafta) <span class="tag">Haftalık Devir</span></h3>
+      <h3 id="sure-title">📖 Sure Nöbetleri <span class="tag">Haftalık Devir</span></h3>
       <div class="task-list" id="list-sure"></div>
     </div>
 
     <!-- 7. Kur'ân Hatmi -->
     <div class="section-card">
-      <h3 id="kuran-title">📖 Kur’ân-ı Azîmüşşan Okuması (26. Hafta) <span class="tag">Haftalık +20 Sayfa</span></h3>
+      <h3 id="kuran-title">📖 Kur’ân-ı Azîmüşşan Okuması <span class="tag">Haftalık +20 Sayfa</span></h3>
       <div class="task-list" id="list-kuran"></div>
     </div>
 
@@ -550,7 +552,7 @@
     </div>
   </div>
 
-  <!-- POP-UP MODALLARI (Değişmedi) -->
+  <!-- POP-UP MODALLARI -->
   <div class="popup-overlay hidden" id="popup-1">
     <div class="popup-box">
       <div class="popup-header">🤲 Allah Kabul Etsin</div>
@@ -742,43 +744,24 @@
     function checkPassword() {
       const input = document.getElementById("pass-input").value;
       if (input === ADMIN_PASSWORD) {
-        isAdmin = true;
-        localStorage.setItem("is_admin_530033", "true");
-        localStorage.setItem("auth_5300", "true");
-        document.getElementById("lock-screen").style.display = "none";
-        applyAdminUI();
-        startPopupSequence();
+        isAdmin = true; localStorage.setItem("is_admin_530033", "true"); localStorage.setItem("auth_5300", "true");
+        document.getElementById("lock-screen").style.display = "none"; applyAdminUI(); startPopupSequence();
       } else if (input === USER_PASSWORD) {
-        isAdmin = false;
-        localStorage.removeItem("is_admin_530033");
-        localStorage.setItem("auth_5300", "true");
-        document.getElementById("lock-screen").style.display = "none";
-        applyAdminUI();
-        startPopupSequence();
-      } else {
-        document.getElementById("lock-err").style.display = "block";
-      }
+        isAdmin = false; localStorage.removeItem("is_admin_530033"); localStorage.setItem("auth_5300", "true");
+        document.getElementById("lock-screen").style.display = "none"; applyAdminUI(); startPopupSequence();
+      } else { document.getElementById("lock-err").style.display = "block"; }
     }
 
     function toggleAdminPrompt() {
       if (isAdmin) {
         if (confirm("Yönetici modundan çıkıp normal kullanıcı moduna geçmek istiyor musunuz?")) {
-          isAdmin = false;
-          localStorage.removeItem("is_admin_530033");
-          applyAdminUI();
-          render();
+          isAdmin = false; localStorage.removeItem("is_admin_530033"); applyAdminUI(); render();
         }
       } else {
         const pass = prompt("Yönetici butonlarını açmak için YÖNETİCİ ŞİFRESİNİ giriniz:");
         if (pass === ADMIN_PASSWORD) {
-          isAdmin = true;
-          localStorage.setItem("is_admin_530033", "true");
-          applyAdminUI();
-          render();
-          alert("Yönetici modu başarıyla açıldı!");
-        } else if (pass) {
-          alert("Hatalı yönetici şifresi!");
-        }
+          isAdmin = true; localStorage.setItem("is_admin_530033", "true"); applyAdminUI(); render(); alert("Yönetici modu başarıyla açıldı!");
+        } else if (pass) { alert("Hatalı yönetici şifresi!"); }
       }
     }
 
@@ -804,23 +787,15 @@
     ];
 
     const sekineNobetleri = {
-      1: { gun: "Pazartesi", abi: "Hasan Abi" },
-      2: { gun: "Salı", abi: "Macit Abi" },
-      3: { gun: "Çarşamba", abi: "Muhyiddin" },
-      4: { gun: "Perşembe", abi: "Necdet Abi" },
-      5: { gun: "Cuma", abi: "Yusuf Erge Abi" },
-      6: { gun: "Cumartesi", abi: "Yusuf Sarıoğlu Abi" },
-      0: { gun: "Pazar", abi: "Gökhan" }
+      1: { gun: "Pazartesi", abi: "Hasan Abi" }, 2: { gun: "Salı", abi: "Macit Abi" },
+      3: { gun: "Çarşamba", abi: "Muhyiddin" }, 4: { gun: "Perşembe", abi: "Necdet Abi" },
+      5: { gun: "Cuma", abi: "Yusuf Erge Abi" }, 6: { gun: "Cumartesi", abi: "Yusuf Sarıoğlu Abi" }, 0: { gun: "Pazar", abi: "Gökhan" }
     };
 
     const gunlukGorseller = {
-      1: { baslik: "Vefat Eden Risale-i Nur Talebeleri", dosya: "pazartesi.jpg" },
-      2: { baslik: "Kur’ân’da İsmi Geçen 25 Peygamber", dosya: "sali.jpg" },
-      3: { baslik: "Ashâb-ı Bedir (313 Şanlı Mücahid)", dosya: "carsamba.jpg" },
-      4: { baslik: "Uhud Şehitleri", dosya: "persembe.jpg" },
-      5: { baslik: "Aşere-i Mübeşşere", dosya: "cuma.jpg" },
-      6: { baslik: "Kütüb-i Sitte İmamları", dosya: "cumartesi.jpg" },
-      0: { baslik: "Meşhur Evliyalar", dosya: "pazar.jpg" }
+      1: { baslik: "Vefat Eden Risale-i Nur Talebeleri", dosya: "pazartesi.jpg" }, 2: { baslik: "Kur’ân’da İsmi Geçen 25 Peygamber", dosya: "sali.jpg" },
+      3: { baslik: "Ashâb-ı Bedir (313 Şanlı Mücahid)", dosya: "carsamba.jpg" }, 4: { baslik: "Uhud Şehitleri", dosya: "persembe.jpg" },
+      5: { baslik: "Aşere-i Mübeşşere", dosya: "cuma.jpg" }, 6: { baslik: "Kütüb-i Sitte İmamları", dosya: "cumartesi.jpg" }, 0: { baslik: "Meşhur Evliyalar", dosya: "pazar.jpg" }
     };
 
     const sureMujdeleri = {
@@ -839,34 +814,24 @@
     function showMujde(event, sureTamAd) {
       event.stopPropagation();
       let key = Object.keys(sureMujdeleri).find(k => sureTamAd.includes(k));
-      if (!key) key = "Tekvîr";
-      const m = sureMujdeleri[key];
+      if (!key) key = "Tekvîr"; const m = sureMujdeleri[key];
       document.getElementById("mujde-modal-title").innerHTML = m.baslik;
       document.getElementById("mujde-modal-body").innerHTML = m.metin;
       document.getElementById("popup-mujde").classList.remove("hidden");
     }
 
     const defaultState = {
-      programTarihi: "19 Ekim 2026 Pazartesi",
-      sonGuncelleme: "19.10.2026 – 00:00",
-      kitapAdi: "Mektubat (575 s.)",
-      gunSayaci: 1,
-      haftaSayaci: 26,
-      sureHaftaSayaci: 14,
-      devirSayaci: 3, // YENİ: Başlangıç Devir Sayısı
+      programTarihi: "19 Ekim 2026 Pazartesi", sonGuncelleme: "19.10.2026 – 00:00",
+      kitapAdi: "Mektubat (575 s.)", gunSayaci: 1, haftaSayaci: 26, sureHaftaSayaci: 14, devirSayaci: 3,
       ezberAyet: {
         arapca: "سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ",
         meal: '"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)'
       },
       risaleSayfalari: [
-        { isim: "Yusuf Erge Abi", basla: 4, bitir: 6, max: 26 },
-        { isim: "Yusuf Sarıoğlu Abi", basla: 30, bitir: 32, max: 52 },
-        { isim: "Gökhan", basla: 56, bitir: 58, max: 78 },
-        { isim: "Hasan Bektaş Abi", basla: 82, bitir: 84, max: 104 },
-        { isim: "Macit Abi", basla: 108, bitir: 110, max: 130 },
-        { isim: "Muhyiddin", basla: 134, bitir: 136, max: 156 },
-        { isim: "Necdet Abi", basla: 160, bitir: 162, max: 182 },
-        { isim: "Hakan", basla: 186, bitir: 188, max: 208 }
+        { isim: "Yusuf Erge Abi", basla: 4, bitir: 6, max: 26 }, { isim: "Yusuf Sarıoğlu Abi", basla: 30, bitir: 32, max: 52 },
+        { isim: "Gökhan", basla: 56, bitir: 58, max: 78 }, { isim: "Hasan Bektaş Abi", basla: 82, bitir: 84, max: 104 },
+        { isim: "Macit Abi", basla: 108, bitir: 110, max: 130 }, { isim: "Muhyiddin", basla: 134, bitir: 136, max: 156 },
+        { isim: "Necdet Abi", basla: 160, bitir: 162, max: 182 }, { isim: "Hakan", basla: 186, bitir: 188, max: 208 }
       ],
       tahmidiyeBloklar: ["10–12", "13–16", "17–20", "1–3", "4–6", "7–9"],
       tahmidiyeKisiler: ["Necmettin", "Muhyiddin", "Gökhan", "Hasan Abi", "Necdet Abi", "Hakan"],
@@ -875,82 +840,53 @@
       cevsenKisiler: ["Necmeddin", "Hasan Bektaş Abi", "Hakan", "Muhyiddin Abi", "Necdet", "Gökhan"],
       cevsenBloklar: ["1–20", "21–40", "41–55", "56–70", "71–85", "86–100 ve Duası"],
       sureNobetleri: [
-        { isim: "Gökhan", s: "Tekvîr + İnfitâr + İnşikâk" },
-        { isim: "Hakan", s: "Fetih Sûresi (29 âyet)" },
-        { isim: "Macit Abi", s: "Mülk Sûresi (30 âyet)" },
-        { isim: "Necdet Abi", s: "Cuma Sûresi (11 âyet)" },
-        { isim: "Necmettin", s: "Rahmân Sûresi (78 âyet)" },
-        { isim: "Yusuf Erge Abi", s: "Duhân Sûresi (59 âyet)" },
-        { isim: "Yusuf Sarıoğlu Abi", s: "Yâsîn Sûresi (83 âyet)" },
-        { isim: "Hasan Abi", s: "Secde Sûresi (30 âyet)" },
-        { isim: "Mesut", s: "Vâkıa Sûresi (96 âyet)" },
-        { isim: "Muhyiddin", s: "Saff Sûresi (14 âyet)" }
+        { isim: "Gökhan", s: "Tekvîr + İnfitâr + İnşikâk" }, { isim: "Hakan", s: "Fetih Sûresi (29 âyet)" },
+        { isim: "Macit Abi", s: "Mülk Sûresi (30 âyet)" }, { isim: "Necdet Abi", s: "Cuma Sûresi (11 âyet)" },
+        { isim: "Necmettin", s: "Rahmân Sûresi (78 âyet)" }, { isim: "Yusuf Erge Abi", s: "Duhân Sûresi (59 âyet)" },
+        { isim: "Yusuf Sarıoğlu Abi", s: "Yâsîn Sûresi (83 âyet)" }, { isim: "Hasan Abi", s: "Secde Sûresi (30 âyet)" },
+        { isim: "Mesut", s: "Vâkıa Sûresi (96 âyet)" }, { isim: "Muhyiddin", s: "Saff Sûresi (14 âyet)" }
       ],
       kuranSayfalari: [
-        { isim: "Yusuf Sarıoğlu Abi", basla: 481, bitir: 482 },
-        { isim: "Ercan Abi", basla: 483, bitir: 484 },
-        { isim: "Gökhan", basla: 485, bitir: 485 },
-        { isim: "Necmettin", basla: 486, bitir: 486 },
-        { isim: "Mehmet Biber", basla: 487, bitir: 488 },
-        { isim: "Hakan", basla: 489, bitir: 490 },
-        { isim: "Macit Abi", basla: 491, bitir: 492 },
-        { isim: "Muhyiddin", basla: 493, bitir: 494 },
-        { isim: "Necdet Abi", basla: 495, bitir: 496 },
-        { isim: "Mesut", basla: 497, bitir: 498 },
-        { isim: "Yusuf Erge Abi", basla: 499, bitir: 500 }
-      ],
-      vefaSirasi: 0,
-      canliTikler: {}
+        { isim: "Yusuf Sarıoğlu Abi", basla: 481, bitir: 482 }, { isim: "Ercan Abi", basla: 483, bitir: 484 },
+        { isim: "Gökhan", basla: 485, bitir: 485 }, { isim: "Necmettin", basla: 486, bitir: 486 },
+        { isim: "Mehmet Biber", basla: 487, bitir: 488 }, { isim: "Hakan", basla: 489, bitir: 490 },
+        { isim: "Macit Abi", basla: 491, bitir: 492 }, { isim: "Muhyiddin", basla: 493, bitir: 494 },
+        { isim: "Necdet Abi", basla: 495, bitir: 496 }, { isim: "Mesut", basla: 497, bitir: 498 }, { isim: "Yusuf Erge Abi", basla: 499, bitir: 500 }
+      ], vefaSirasi: 0, canliTikler: {}
     };
 
     let liveState = defaultState;
 
     stateRef.on("value", (snapshot) => {
       const data = snapshot.val();
-      if (!data) {
-        stateRef.set(defaultState);
-      } else {
+      if (!data) { stateRef.set(defaultState); } else {
         liveState = {
-          ...defaultState,
-          ...data,
+          ...defaultState, ...data,
           sureNobetleri: data.sureNobetleri || defaultState.sureNobetleri,
           kuranSayfalari: data.kuranSayfalari || defaultState.kuranSayfalari,
           cevsenKisiler: data.cevsenKisiler || defaultState.cevsenKisiler,
-          devirSayaci: data.devirSayaci || defaultState.devirSayaci // YENİ: Devir sayacı çekiliyor
+          devirSayaci: data.devirSayaci || defaultState.devirSayaci
         };
         render();
       }
     });
 
-    function toggleTask(id) {
-      const current = liveState.canliTikler && liveState.canliTikler[id];
-      stateRef.child("canliTikler").child(id).set(!current);
-    }
+    function toggleTask(id) { const current = liveState.canliTikler && liveState.canliTikler[id]; stateRef.child("canliTikler").child(id).set(!current); }
 
     function promptEditAyet() {
-      const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", liveState.ezberAyet.arapca);
-      if (!yeniArapca) return;
-      const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", liveState.ezberAyet.meal);
-      if (!yeniMeal) return;
-
-      stateRef.child("ezberAyet").set({ arapca: yeniArapca, meal: yeniMeal }).then(() => {
-        alert("Ezber âyeti canlı olarak tüm grupta güncellendi!");
-      });
+      const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", liveState.ezberAyet.arapca); if (!yeniArapca) return;
+      const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", liveState.ezberAyet.meal); if (!yeniMeal) return;
+      stateRef.child("ezberAyet").set({ arapca: yeniArapca, meal: yeniMeal }).then(() => { alert("Ezber âyeti canlı olarak tüm grupta güncellendi!"); });
     }
 
     function formatNow() {
-      const d = new Date();
-      const gun = String(d.getDate()).padStart(2, '0');
-      const ay = String(d.getMonth() + 1).padStart(2, '0');
-      const yil = d.getFullYear();
-      const saat = String(d.getHours()).padStart(2, '0');
-      const dak = String(d.getMinutes()).padStart(2, '0');
+      const d = new Date(); const gun = String(d.getDate()).padStart(2, '0'); const ay = String(d.getMonth() + 1).padStart(2, '0');
+      const yil = d.getFullYear(); const saat = String(d.getHours()).padStart(2, '0'); const dak = String(d.getMinutes()).padStart(2, '0');
       return `${gun}.${ay}.${yil} – ${saat}:${dak}`;
     }
 
     function getBugunYazi() {
-      const d = new Date();
-      const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
+      const d = new Date(); const aylar = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
       const gunler = ["Pazar", "Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi"];
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
@@ -958,104 +894,71 @@
     // GÜN ATLATMA: SADECE GÜNLÜK TİKLERİ SİLER
     function advanceToNextDay() {
       if (!confirm("Günü ilerletmek istiyor musunuz?")) return;
-
-      const yeniRisale = liveState.risaleSayfalari.map(item => ({
-        ...item, basla: item.basla + 3, bitir: item.bitir + 3
-      }));
-
-      const yeniTahmidiye = [...liveState.tahmidiyeBloklar];
-      yeniTahmidiye.push(yeniTahmidiye.shift());
-
-      const yeniDelail = [...liveState.delailBloklar];
-      yeniDelail.push(yeniDelail.shift());
-
-      const yeniVefa = (liveState.vefaSirasi + 1) % vefaListesi.length;
-      const yeniGun = (liveState.gunSayaci || 1) + 1;
+      const yeniRisale = liveState.risaleSayfalari.map(item => ({ ...item, basla: item.basla + 3, bitir: item.bitir + 3 }));
+      const yeniTahmidiye = [...liveState.tahmidiyeBloklar]; yeniTahmidiye.push(yeniTahmidiye.shift());
+      const yeniDelail = [...liveState.delailBloklar]; yeniDelail.push(yeniDelail.shift());
+      const yeniVefa = (liveState.vefaSirasi + 1) % vefaListesi.length; const yeniGun = (liveState.gunSayaci || 1) + 1;
 
       // SADECE GÜNLÜK TİKLERİ SİLİYORUZ (Haftalıklar kalıyor)
       const yeniTikler = { ...(liveState.canliTikler || {}) };
-      Object.keys(yeniTikler).forEach(k => {
-        if (!k.startsWith('cev_') && !k.startsWith('sur_') && !k.startsWith('kur_')) {
-          delete yeniTikler[k];
-        }
-      });
+      Object.keys(yeniTikler).forEach(k => { if (!k.startsWith('cev_') && !k.startsWith('sur_') && !k.startsWith('kur_')) { delete yeniTikler[k]; } });
 
       stateRef.update({
-        programTarihi: getBugunYazi(),
-        sonGuncelleme: formatNow(),
-        gunSayaci: yeniGun,
-        risaleSayfalari: yeniRisale,
-        tahmidiyeBloklar: yeniTahmidiye,
-        delailBloklar: yeniDelail,
-        vefaSirasi: yeniVefa,
-        canliTikler: yeniTikler
-      }).then(() => {
-        alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`);
-        startPopupSequence();
-      });
+        programTarihi: getBugunYazi(), sonGuncelleme: formatNow(), gunSayaci: yeniGun,
+        risaleSayfalari: yeniRisale, tahmidiyeBloklar: yeniTahmidiye, delailBloklar: yeniDelail,
+        vefaSirasi: yeniVefa, canliTikler: yeniTikler
+      }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`); startPopupSequence(); });
     }
 
     // HAFTA ATLATMA: SADECE HAFTALIK TİKLERİ SİLER VE CEVŞENİ KAYDIRIR
     function advanceToNextWeek() {
       if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân ilerleyecek, Sûre ve Cevşen devredecek.")) return;
-
       const yeniKuran = liveState.kuranSayfalari.map(item => {
         let b = item.basla + 20; let son = item.bitir + 20;
-        if (b > 604) b = (b % 604) || 604;
-        if (son > 604) son = (son % 604) || 604;
+        if (b > 604) b = (b % 604) || 604; if (son > 604) son = (son % 604) || 604;
         return { ...item, basla: b, bitir: son };
       });
-
-      const sureler = liveState.sureNobetleri.map(item => item.s);
-      sureler.unshift(sureler.pop());
-      const yeniSureNobetleri = liveState.sureNobetleri.map((item, idx) => ({
-        isim: item.isim, s: sureler[idx]
-      }));
+      const sureler = liveState.sureNobetleri.map(item => item.s); sureler.unshift(sureler.pop());
+      const yeniSureNobetleri = liveState.sureNobetleri.map((item, idx) => ({ isim: item.isim, s: sureler[idx] }));
 
       // CEVŞEN KAYDIRMA MANTIĞI
       const yeniCevsenKisiler = [...(liveState.cevsenKisiler || defaultState.cevsenKisiler)];
       yeniCevsenKisiler.unshift(yeniCevsenKisiler.pop()); 
 
-      const yeniHafta = (liveState.haftaSayaci || 25) + 1;
-      const yeniSureHafta = (liveState.sureHaftaSayaci || 13) + 1;
+      const yeniHafta = (liveState.haftaSayaci || 25) + 1; const yeniSureHafta = (liveState.sureHaftaSayaci || 13) + 1;
 
       // SADECE HAFTALIK TİKLERİ SİLİYORUZ
       const yeniTikler = { ...(liveState.canliTikler || {}) };
-      Object.keys(yeniTikler).forEach(k => {
-        if (k.startsWith('cev_') || k.startsWith('sur_') || k.startsWith('kur_')) {
-          delete yeniTikler[k];
-        }
-      });
+      Object.keys(yeniTikler).forEach(k => { if (k.startsWith('cev_') || k.startsWith('sur_') || k.startsWith('kur_')) { delete yeniTikler[k]; } });
 
       stateRef.update({
-        sonGuncelleme: formatNow(),
-        haftaSayaci: yeniHafta,
-        sureHaftaSayaci: yeniSureHafta,
-        kuranSayfalari: yeniKuran,
-        sureNobetleri: yeniSureNobetleri,
-        cevsenKisiler: yeniCevsenKisiler,
-        canliTikler: yeniTikler
-      }).then(() => {
-        alert("Hafta güncellendi! Kur'ân ilerledi, Sûreler ve Cevşen devredildi.");
-      });
+        sonGuncelleme: formatNow(), haftaSayaci: yeniHafta, sureHaftaSayaci: yeniSureHafta,
+        kuranSayfalari: yeniKuran, sureNobetleri: yeniSureNobetleri, cevsenKisiler: yeniCevsenKisiler, canliTikler: yeniTikler
+      }).then(() => { alert("Hafta güncellendi! Kur'ân ilerledi, Sûreler ve Cevşen devredildi."); });
+    }
+
+    // SADECE CEVŞENİ MANUEL KAYDIRAN GÜVENLİK BUTONU (GEÇMİŞİ DÜZELTMEK İÇİN)
+    function shiftCevsenOnly() {
+      if (!confirm("Sadece Cevşen sırasını bir kişi kaydırmak istiyor musunuz?")) return;
+      const yeniCevsenKisiler = [...(liveState.cevsenKisiler || defaultState.cevsenKisiler)];
+      yeniCevsenKisiler.unshift(yeniCevsenKisiler.pop()); 
+      stateRef.update({ cevsenKisiler: yeniCevsenKisiler }).then(() => { alert("Cevşen sırası başarıyla kaydırıldı!"); });
     }
 
     function render() {
       if (!liveState || !liveState.ezberAyet) return;
-
       const tikler = liveState.canliTikler || {};
 
       document.getElementById("program-date-title").innerText = `📅 ${liveState.programTarihi || "19 Ekim 2026 Pazartesi"}`;
       document.getElementById("last-updated-text").innerText = `Son Güncelleme: ${liveState.sonGuncelleme || "19.10.2026 – 00:00"}`;
       document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[liveState.vefaSirasi || 0]}`;
-
       document.getElementById("banner-arabic").innerText = liveState.ezberAyet.arapca;
       document.getElementById("banner-meal").innerText = liveState.ezberAyet.meal;
       document.getElementById("popup-arabic").innerText = liveState.ezberAyet.arapca;
       document.getElementById("popup-meal").innerHTML = liveState.ezberAyet.meal;
 
       const kitap = liveState.kitapAdi || "Mektubat (575 s.)";
-      const devir = liveState.devirSayaci || 3; // YENİ: Devir sayısını arayüze basıyoruz
+      const devir = liveState.devirSayaci || 3; 
       
       document.getElementById("risale-title").innerHTML = `📗 ${devir}. Devir: ${kitap} – ${liveState.gunSayaci || 1}. gün <span class="tag">Her gün +3 Sayfa</span>`;
       document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${liveState.sureHaftaSayaci || 14}. Hafta) <span class="tag">Haftalık Devir</span>`;
@@ -1129,8 +1032,7 @@
 
     function startPopupSequence() { document.getElementById("popup-1").classList.remove("hidden"); }
     function nextPopup(currentId) {
-      document.getElementById(`popup-${currentId}`).classList.add("hidden");
-      const nextId = currentId + 1;
+      document.getElementById(`popup-${currentId}`).classList.add("hidden"); const nextId = currentId + 1;
       if (nextId === 2) {
         const bugunNo = new Date().getDay(); const kart = gunlukGorseller[bugunNo];
         document.getElementById("popup-2-title").innerText = kart.baslik;
@@ -1138,8 +1040,7 @@
       } else if (nextId === 3) { document.getElementById("vefa-abi-name").innerText = vefaListesi[liveState.vefaSirasi || 0];
       } else if (nextId === 4) {
         if (typeof davaNotlari !== "undefined" && davaNotlari.length > 0) {
-          const index = ((liveState.gunSayaci || 2) - 1) % davaNotlari.length;
-          document.getElementById("dava-notu-metin").innerHTML = `"${davaNotlari[index]}"`;
+          const index = ((liveState.gunSayaci || 2) - 1) % davaNotlari.length; document.getElementById("dava-notu-metin").innerHTML = `"${davaNotlari[index]}"`;
         } else { document.getElementById("dava-notu-metin").innerHTML = `"Hizmet, hizmet derken şahsî dersini unutanın, hizmeti muvakkat olur. Şimdi oku, kabirde okuyamazsın."`; }
       }
       document.getElementById(`popup-${nextId}`).classList.remove("hidden");
@@ -1157,26 +1058,14 @@
     // YENİ KİTABA GEÇ: SADECE RİSALE TİKLERİNİ SİLER VE DEVİR SAYACINI KONTROL EDER
     function advanceToNextBook() {
       if (!confirm("Sıradaki kitaba geçmek istiyor musunuz? İsimlerin ve sayfaların dağılımı otomatik yapılacaktır.")) return;
-
-      let currentKitapAdi = liveState.kitapAdi.split(" (")[0]; 
-      let currentIndex = kitapListesi.findIndex(k => k.ad === currentKitapAdi);
-      let nextIndex = currentIndex + 1; let isNewTur = false;
-      let currentDevir = liveState.devirSayaci || 3; // YENİ: Mevcut devri alıyoruz
+      let currentKitapAdi = liveState.kitapAdi.split(" (")[0]; let currentIndex = kitapListesi.findIndex(k => k.ad === currentKitapAdi);
+      let nextIndex = currentIndex + 1; let isNewTur = false; let currentDevir = liveState.devirSayaci || 3; 
       
-      // Külliyat Bittiğinde En Başa Döner ve Devir Sayısını 1 Artırır
-      if (nextIndex >= kitapListesi.length || currentIndex === -1) { 
-        nextIndex = 0; 
-        isNewTur = true; 
-        currentDevir++; // YENİ: Devir artıyor
-      }
+      if (nextIndex >= kitapListesi.length || currentIndex === -1) { nextIndex = 0; isNewTur = true; currentDevir++; }
       
-      const nextKitap = kitapListesi[nextIndex];
-      let isimler = liveState.risaleSayfalari.map(item => item.isim);
+      const nextKitap = kitapListesi[nextIndex]; let isimler = liveState.risaleSayfalari.map(item => item.isim);
       
-      if (isNewTur) {
-        let sonKisi = isimler.pop(); isimler.unshift(sonKisi);
-        alert(`Tebrikler! ${currentDevir}. Devir'e geçildi! İsimler bir sıra kaydırıldı. İlk sıraya ${sonKisi} geldi.`);
-      }
+      if (isNewTur) { let sonKisi = isimler.pop(); isimler.unshift(sonKisi); alert(`Tebrikler! ${currentDevir}. Devir'e geçildi! İsimler bir sıra kaydırıldı. İlk sıraya ${sonKisi} geldi.`); }
       
       let kisiSayisi = isimler.length; let blokSayfa = Math.ceil(nextKitap.sayfa / kisiSayisi);
       let yeniRisale = isimler.map((kisi, index) => {
@@ -1184,28 +1073,18 @@
         return { isim: kisi, basla: baslangic, bitir: baslangic + 2, max: max };
       });
       
-      // SADECE RİSALE TİKLERİNİ TEMİZLE (Diğerleri kalıyor)
       const yeniTikler = { ...(liveState.canliTikler || {}) };
       Object.keys(yeniTikler).forEach(k => { if (k.startsWith('r_')) delete yeniTikler[k]; });
 
       stateRef.update({
-        kitapAdi: `${nextKitap.ad} (${nextKitap.sayfa} s.)`,
-        gunSayaci: 1, 
-        sonGuncelleme: formatNow(),
-        risaleSayfalari: yeniRisale,
-        canliTikler: yeniTikler,
-        devirSayaci: currentDevir // YENİ: Artan devri Firebase'e yaz
-      }).then(() => { 
-        if(!isNewTur) { alert(`Başarıyla ${nextKitap.ad} kitabına geçildi ve herkese sayfaları dağıtıldı!`); }
-      });
+        kitapAdi: `${nextKitap.ad} (${nextKitap.sayfa} s.)`, gunSayaci: 1, sonGuncelleme: formatNow(),
+        risaleSayfalari: yeniRisale, canliTikler: yeniTikler, devirSayaci: currentDevir 
+      }).then(() => { if(!isNewTur) { alert(`Başarıyla ${nextKitap.ad} kitabına geçildi ve herkese sayfaları dağıtıldı!`); } });
     }
 
     window.addEventListener("DOMContentLoaded", () => {
       applyAdminUI();
-      if (localStorage.getItem("auth_5300") === "true") {
-        document.getElementById("lock-screen").style.display = "none";
-        startPopupSequence();
-      }
+      if (localStorage.getItem("auth_5300") === "true") { document.getElementById("lock-screen").style.display = "none"; startPopupSequence(); }
     });
 
     /* --- ŞAHSİ HEDEFLER JAVASCRIPT --- */
@@ -1213,13 +1092,7 @@
 
     firebase.database().ref('sahsi_okumalar').on('value', (snapshot) => {
       sahsiAbiler = []; const data = snapshot.val();
-      if (data) {
-        Object.keys(data).forEach(key => {
-          let kisi = data[key]; kisi.id = key;
-          if (!kisi.hedefler) kisi.hedefler = [];
-          sahsiAbiler.push(kisi);
-        });
-      }
+      if (data) { Object.keys(data).forEach(key => { let kisi = data[key]; kisi.id = key; if (!kisi.hedefler) kisi.hedefler = []; sahsiAbiler.push(kisi); }); }
       sahsiEkraniGuncelle();
     });
 
@@ -1230,35 +1103,23 @@
     }
 
     function sahsiHedefiKaydet() {
-      const progSecimi = document.getElementById("program-secimi").value;
-      const ozelIsimInput = document.getElementById("ozel-isim").value.trim();
-      let gosterimAdi = progSecimi;
-      
+      const progSecimi = document.getElementById("program-secimi").value; const ozelIsimInput = document.getElementById("ozel-isim").value.trim(); let gosterimAdi = progSecimi;
       if (progSecimi === "Risale") gosterimAdi = "Risale: " + document.getElementById("risale-kitap").value;
-      if (ozelIsimInput !== "") gosterimAdi = ozelIsimInput;
-      else if (progSecimi === "İlave Okuma") gosterimAdi = "İlave Okuma"; 
-      else if (progSecimi === "Diğer (Görev)") gosterimAdi = "Görev";
+      if (ozelIsimInput !== "") gosterimAdi = ozelIsimInput; else if (progSecimi === "İlave Okuma") gosterimAdi = "İlave Okuma"; else if (progSecimi === "Diğer (Görev)") gosterimAdi = "Görev";
       
-      const periyot = document.getElementById("periyot").value;
-      let tur = "", miktar = 1, baslangic = 1, gorevMetni = "";
+      const periyot = document.getElementById("periyot").value; let tur = "", miktar = 1, baslangic = 1, gorevMetni = "";
 
       if (progSecimi === "Diğer (Görev)") { gorevMetni = document.getElementById("gorev-metni").value.trim() || "Belirtilmedi";
       } else {
         if (progSecimi === "Sabit Cüz") tur = "Cüz"; else if (progSecimi === "Risale") tur = "Sayfa"; else tur = document.getElementById("okuma-turu").value;
-        miktar = (progSecimi === "Sabit Cüz") ? 1 : parseInt(document.getElementById("miktar").value);
-        baslangic = parseInt(document.getElementById("baslangic").value);
+        miktar = (progSecimi === "Sabit Cüz") ? 1 : parseInt(document.getElementById("miktar").value); baslangic = parseInt(document.getElementById("baslangic").value);
       }
 
-      sahsiAbiler[sahsiSeciliKisi].hedefler.push({ 
-        asliProgram: progSecimi, gosterimAdi: gosterimAdi, periyot: periyot, 
-        tur: tur, miktar: miktar, baslangic: baslangic, gorevMetni: gorevMetni, tikli: false 
-      });
+      sahsiAbiler[sahsiSeciliKisi].hedefler.push({ asliProgram: progSecimi, gosterimAdi: gosterimAdi, periyot: periyot, tur: tur, miktar: miktar, baslangic: baslangic, gorevMetni: gorevMetni, tikli: false });
       sahsiHedefGuncelleDB(sahsiSeciliKisi); sahsiModalKapat();
     }
 
-    function sahsiTikDegistir(kisiIndex, hedefIndex, durum) { 
-      sahsiAbiler[kisiIndex].hedefler[hedefIndex].tikli = durum; sahsiHedefGuncelleDB(kisiIndex);
-    }
+    function sahsiTikDegistir(kisiIndex, hedefIndex, durum) { sahsiAbiler[kisiIndex].hedefler[hedefIndex].tikli = durum; sahsiHedefGuncelleDB(kisiIndex); }
 
     function sahsiHedefIlerlet(kisiIndex, hedefIndex) {
       let hedef = sahsiAbiler[kisiIndex].hedefler[hedefIndex]; hedef.baslangic += hedef.miktar;
@@ -1279,19 +1140,14 @@
     }
 
     function sahsiHedefSil(kisiIndex, hedefIndex) {
-      if(confirm("Bu programı silmek istediğinize emin misiniz?")) {
-        sahsiAbiler[kisiIndex].hedefler.splice(hedefIndex, 1); sahsiHedefGuncelleDB(kisiIndex);
-      }
+      if(confirm("Bu programı silmek istediğinize emin misiniz?")) { sahsiAbiler[kisiIndex].hedefler.splice(hedefIndex, 1); sahsiHedefGuncelleDB(kisiIndex); }
     }
 
     function sahsiKisiSil(kisiIndex) {
-      if(confirm("Bu kişiyi ve tüm hedeflerini listeden silmek istediğinize emin misiniz?")) {
-        firebase.database().ref('sahsi_okumalar/' + sahsiAbiler[kisiIndex].id).remove();
-      }
+      if(confirm("Bu kişiyi ve tüm hedeflerini listeden silmek istediğinize emin misiniz?")) { firebase.database().ref('sahsi_okumalar/' + sahsiAbiler[kisiIndex].id).remove(); }
     }
 
     function sahsiHedefGuncelleDB(kisiIndex) { firebase.database().ref('sahsi_okumalar/' + sahsiAbiler[kisiIndex].id + '/hedefler').set(sahsiAbiler[kisiIndex].hedefler); }
-
     function kisiModalAc() { document.getElementById("yeni-kisi-isim").value = ""; document.getElementById("kisi-modal").style.display = "flex"; }
     function kisiModalKapat() { document.getElementById("kisi-modal").style.display = "none"; }
     function sahsiModalKapat() { document.getElementById("hedef-modal").style.display = "none"; }
@@ -1304,8 +1160,7 @@
     }
 
     function sahsiProgramDegisti() {
-      const prog = document.getElementById("program-secimi").value;
-      document.getElementById("risale-kitap-grubu").style.display = (prog === "Risale") ? "block" : "none";
+      const prog = document.getElementById("program-secimi").value; document.getElementById("risale-kitap-grubu").style.display = (prog === "Risale") ? "block" : "none";
       if (prog === "Diğer (Görev)") {
         document.getElementById("okuma-alanlari").style.display = "none"; document.getElementById("gorev-grubu").style.display = "block";
       } else {
