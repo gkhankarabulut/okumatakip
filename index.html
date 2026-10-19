@@ -490,8 +490,6 @@
         <button class="btn-admin" onclick="advanceToNextDay()">🌙 Sonraki Güne Geç</button>
         <button class="btn-admin btn-week" onclick="advanceToNextWeek()">🗓️ Yeni Haftaya Geç</button>
         <button class="btn-admin" style="background:#0284c7;" onclick="advanceToNextBook()">📚 Yeni Kitaba Geç</button>
-        <!-- CEVŞEN DÜZELTME BUTONU EKLENDİ -->
-        <button class="btn-admin" style="background:#8b5cf6;" onclick="shiftCevsenOnly()">📿 Cevşeni Kaydır</button>
       </div>
     </div>
 
@@ -891,26 +889,23 @@
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
 
-    // GÜN ATLATMA: SADECE GÜNLÜK TİKLERİ SİLER
+    // GÜN ATLATMA: ARTIK TÜM TİKLER (RİSALE, TAHMİDİYE, DELAİL, CEVŞEN, SURE, KURAN) SIFIRLANIR!
     function advanceToNextDay() {
-      if (!confirm("Günü ilerletmek istiyor musunuz?")) return;
+      if (!confirm("Günü ilerletmek istiyor musunuz? Tüm günlük ve haftalık sabit görevlerin tikleri temizlenecek.")) return;
       const yeniRisale = liveState.risaleSayfalari.map(item => ({ ...item, basla: item.basla + 3, bitir: item.bitir + 3 }));
       const yeniTahmidiye = [...liveState.tahmidiyeBloklar]; yeniTahmidiye.push(yeniTahmidiye.shift());
       const yeniDelail = [...liveState.delailBloklar]; yeniDelail.push(yeniDelail.shift());
       const yeniVefa = (liveState.vefaSirasi + 1) % vefaListesi.length; const yeniGun = (liveState.gunSayaci || 1) + 1;
 
-      // SADECE GÜNLÜK TİKLERİ SİLİYORUZ (Haftalıklar kalıyor)
-      const yeniTikler = { ...(liveState.canliTikler || {}) };
-      Object.keys(yeniTikler).forEach(k => { if (!k.startsWith('cev_') && !k.startsWith('sur_') && !k.startsWith('kur_')) { delete yeniTikler[k]; } });
-
+      // TÜM TİKLERİ TEMİZLİYORUZ (Çünkü her gün yeniden okunurlar)
       stateRef.update({
         programTarihi: getBugunYazi(), sonGuncelleme: formatNow(), gunSayaci: yeniGun,
         risaleSayfalari: yeniRisale, tahmidiyeBloklar: yeniTahmidiye, delailBloklar: yeniDelail,
-        vefaSirasi: yeniVefa, canliTikler: yeniTikler
-      }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`); startPopupSequence(); });
+        vefaSirasi: yeniVefa, canliTikler: {}
+      }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi! Tikler yenilendi.`); startPopupSequence(); });
     }
 
-    // HAFTA ATLATMA: SADECE HAFTALIK TİKLERİ SİLER VE CEVŞENİ KAYDIRIR
+    // HAFTA ATLATMA: KUR'AN İLERLER, SURE VE CEVŞEN DEVREDER
     function advanceToNextWeek() {
       if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân ilerleyecek, Sûre ve Cevşen devredecek.")) return;
       const yeniKuran = liveState.kuranSayfalari.map(item => {
@@ -921,28 +916,15 @@
       const sureler = liveState.sureNobetleri.map(item => item.s); sureler.unshift(sureler.pop());
       const yeniSureNobetleri = liveState.sureNobetleri.map((item, idx) => ({ isim: item.isim, s: sureler[idx] }));
 
-      // CEVŞEN KAYDIRMA MANTIĞI
       const yeniCevsenKisiler = [...(liveState.cevsenKisiler || defaultState.cevsenKisiler)];
       yeniCevsenKisiler.unshift(yeniCevsenKisiler.pop()); 
 
       const yeniHafta = (liveState.haftaSayaci || 25) + 1; const yeniSureHafta = (liveState.sureHaftaSayaci || 13) + 1;
 
-      // SADECE HAFTALIK TİKLERİ SİLİYORUZ
-      const yeniTikler = { ...(liveState.canliTikler || {}) };
-      Object.keys(yeniTikler).forEach(k => { if (k.startsWith('cev_') || k.startsWith('sur_') || k.startsWith('kur_')) { delete yeniTikler[k]; } });
-
       stateRef.update({
         sonGuncelleme: formatNow(), haftaSayaci: yeniHafta, sureHaftaSayaci: yeniSureHafta,
-        kuranSayfalari: yeniKuran, sureNobetleri: yeniSureNobetleri, cevsenKisiler: yeniCevsenKisiler, canliTikler: yeniTikler
+        kuranSayfalari: yeniKuran, sureNobetleri: yeniSureNobetleri, cevsenKisiler: yeniCevsenKisiler
       }).then(() => { alert("Hafta güncellendi! Kur'ân ilerledi, Sûreler ve Cevşen devredildi."); });
-    }
-
-    // SADECE CEVŞENİ MANUEL KAYDIRAN GÜVENLİK BUTONU (GEÇMİŞİ DÜZELTMEK İÇİN)
-    function shiftCevsenOnly() {
-      if (!confirm("Sadece Cevşen sırasını bir kişi kaydırmak istiyor musunuz?")) return;
-      const yeniCevsenKisiler = [...(liveState.cevsenKisiler || defaultState.cevsenKisiler)];
-      yeniCevsenKisiler.unshift(yeniCevsenKisiler.pop()); 
-      stateRef.update({ cevsenKisiler: yeniCevsenKisiler }).then(() => { alert("Cevşen sırası başarıyla kaydırıldı!"); });
     }
 
     function render() {
@@ -1055,7 +1037,6 @@
       { ad: "Emirdağ Lahikası-1", sayfa: 302 }, { ad: "Emirdağ Lahikası-2", sayfa: 257 }, { ad: "İman ve Küfür Muvazeneleri", sayfa: 208 }
     ];
 
-    // YENİ KİTABA GEÇ: SADECE RİSALE TİKLERİNİ SİLER VE DEVİR SAYACINI KONTROL EDER
     function advanceToNextBook() {
       if (!confirm("Sıradaki kitaba geçmek istiyor musunuz? İsimlerin ve sayfaların dağılımı otomatik yapılacaktır.")) return;
       let currentKitapAdi = liveState.kitapAdi.split(" (")[0]; let currentIndex = kitapListesi.findIndex(k => k.ad === currentKitapAdi);
@@ -1210,7 +1191,7 @@
             } else { 
               let okumaBirimi = (hedef.asliProgram === "Risale") ? "Sayfa" : hedef.tur; let sayfaEki = (hedef.asliProgram === "Risale") ? ". Sayfa" : "";
               gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} ${hedef.miktar} ${okumaBirimi} (Devam eden: <b style="color:#0ea5e9">${hedef.baslangic}${sayfaEki}</b>)`;
-              aksiyonButonlari = `<button class="btn-kucuk geri" onclick="sahsiHedefGeriAl(${kisiIndex}, ${hedefIndex})">⏮️ Geri</button><button class="btn-kucuk ileri" onclick="sahsiHedefIlerlet(${kisiIndex}, ${hedefIndex})">⏭️ İlerle</button><button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
+              aksiyonButonlari = `<button class="btn-kucuk geri" onclick="sahsiHedefGeriAl(${kisiIndex}, ${hedefIndex})","⏮️ Geri</button><button class="btn-kucuk ileri" onclick="sahsiHedefIlerlet(${kisiIndex}, ${hedefIndex})">⏭️ İlerle</button><button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
             }
             hDiv.innerHTML = `<div class="sahsi-hedef-sol"><input type="checkbox" ${hedef.tikli ? "checked" : ""} onchange="sahsiTikDegistir(${kisiIndex}, ${hedefIndex}, this.checked)"><span style="color:#4b5563;">${gosterimMetni}</span></div><div class="sahsi-hedef-aksiyonlar">${aksiyonButonlari}</div>`;
             hedefListesiDiv.appendChild(hDiv);
