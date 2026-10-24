@@ -482,8 +482,8 @@
   <div class="container">
     <!-- ARŞİVDEN İNCELENİYOR BİLDİRİM ÇUBUĞU -->
     <div id="archive-banner" class="archive-bar" style="display:none;">
-      <span>📂 <b id="archive-date-label">Geçmiş Tarih</b> arşivinden inceliyorsunuz (Salt Okunur).</span>
-      <button style="background:#d97706; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="exitArchiveMode()">Canlı Panele Dön</button>
+      <span>📂 <b id="archive-date-label">Geçmiş Tarih</b> arşivindesiniz (Değişiklikler o güne kaydedilir).</span>
+      <button style="background:#0284c7; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="exitArchiveMode()">Canlı Panele Dön</button>
     </div>
 
     <!-- Sadece Admine Görünen Canlı İlerleme Sayacı -->
@@ -514,13 +514,13 @@
     <!-- GEÇMİŞ GÜNLER ARŞİV SEÇİCİ KARTI -->
     <div class="section-card" style="background:#f1f5f9; padding:12px 18px;">
       <h3 style="font-size:14px; margin-bottom:8px; border-bottom:none; padding-bottom:0; color:#475569;">
-        <span>📜 Geçmiş Günler Arşivi</span>
+        <span>📜 Geçmiş Günler Arşivi (Düzenlenebilir)</span>
       </h3>
       <div style="display:flex; gap:10px; align-items:center;">
         <select id="archive-select" style="flex-grow:1; padding:8px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px;">
           <option value="">Arşivden bir tarih seçin...</option>
         </select>
-        <button onclick="loadArchiveDay()" style="background:#0284c7; color:white; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;">İncele</button>
+        <button onclick="loadArchiveDay()" style="background:#0284c7; color:white; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;">İncele / Düzenle</button>
       </div>
     </div>
 
@@ -770,7 +770,7 @@
     const USER_PASSWORD = "5300";
     const ADMIN_PASSWORD = "530033";
     let isAdmin = localStorage.getItem("is_admin_530033") === "true";
-    let viewingArchiveData = null; // Arşivden incelenen veri
+    let viewingArchiveKey = null; // Arşivden incelenen günün anahtarı
 
     function checkPassword() {
       const input = document.getElementById("pass-input").value;
@@ -786,12 +786,12 @@
     function toggleAdminPrompt() {
       if (isAdmin) {
         if (confirm("Yönetici modundan çıkıp normal kullanıcı moduna geçmek istiyor musunuz?")) {
-          isAdmin = false; localStorage.removeItem("is_admin_530033"); applyAdminUI(); render();
+          isAdmin = false; localStorage.removeItem("is_admin_530033"); applyAdminUI(); render(liveState);
         }
       } else {
         const pass = prompt("Yönetici butonlarını açmak için YÖNETİCİ ŞİFRESİNİ giriniz:");
         if (pass === ADMIN_PASSWORD) {
-          isAdmin = true; localStorage.setItem("is_admin_530033", "true"); applyAdminUI(); render(); alert("Yönetici modu başarıyla açıldı!");
+          isAdmin = true; localStorage.setItem("is_admin_530033", "true"); applyAdminUI(); render(liveState); alert("Yönetici modu başarıyla açıldı!");
         } else if (pass) { alert("Hatalı yönetici şifresi!"); }
       }
     }
@@ -887,7 +887,8 @@
     };
 
     let liveState = defaultState;
-    let archiveDatesMap = {}; // Arşiv verilerini tutmak için
+    let archiveDatesMap = {}; 
+    let currentArchiveDataObject = null;
 
     // Canlı Panoyu Dinle
     stateRef.on("value", (snapshot) => {
@@ -900,7 +901,7 @@
           cevsenKisiler: data.cevsenKisiler || defaultState.cevsenKisiler,
           devirSayaci: data.devirSayaci || defaultState.devirSayaci
         };
-        if (!viewingArchiveData) render(liveState);
+        if (!viewingArchiveKey) render(liveState);
       }
     });
 
@@ -923,14 +924,26 @@
       }
     });
 
+    // TIKLAMA YÖNETİMİ (Canlı veya Arşiv)
     function toggleTask(id) { 
-      if (viewingArchiveData) { alert("Arşiv modundayken tik atılamaz, burası sadece inceleme içindir!"); return; }
-      const current = liveState.canliTikler && liveState.canliTikler[id]; 
-      stateRef.child("canliTikler").child(id).set(!current); 
+      if (viewingArchiveKey) {
+        // Arşiv modundaysak, tik durumunu arşiv objesinde değiştir ve Firebase'e kaydet
+        if (!currentArchiveDataObject.canliTikler) currentArchiveDataObject.canliTikler = {};
+        const current = currentArchiveDataObject.canliTikler[id];
+        currentArchiveDataObject.canliTikler[id] = !current;
+        
+        archiveRef.child(viewingArchiveKey).set(currentArchiveDataObject).then(() => {
+          render(currentArchiveDataObject);
+        });
+      } else {
+        // Canlı mod
+        const current = liveState.canliTikler && liveState.canliTikler[id]; 
+        stateRef.child("canliTikler").child(id).set(!current); 
+      }
     }
 
     function promptEditAyet() {
-      if (viewingArchiveData) return;
+      if (viewingArchiveKey) return;
       const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", liveState.ezberAyet.arapca); if (!yeniArapca) return;
       const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", liveState.ezberAyet.meal); if (!yeniMeal) return;
       stateRef.child("ezberAyet").set({ arapca: yeniArapca, meal: yeniMeal }).then(() => { alert("Ezber âyeti canlı olarak tüm grupta güncellendi!"); });
@@ -952,11 +965,9 @@
     function advanceToNextDay() {
       if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün arşive kaydedilecek ve görevler sıfırlanacak.")) return;
       
-      // 1. Mevcut günü arşive kopyala (Key olarak eski tarihi veya sayacı kullan)
       let archiveKey = "gun_" + (liveState.gunSayaci || 1) + "_" + (liveState.programTarihi || "tarih").replace(/ /g, "_");
       archiveRef.child(archiveKey).set(liveState);
 
-      // 2. Yeni gün hesaplamaları
       const yeniRisale = liveState.risaleSayfalari.map(item => ({ ...item, basla: item.basla + 3, bitir: item.bitir + 3 }));
       const yeniTahmidiye = [...liveState.tahmidiyeBloklar]; yeniTahmidiye.push(yeniTahmidiye.shift());
       const yeniDelail = [...liveState.delailBloklar]; yeniDelail.push(yeniDelail.shift());
@@ -988,21 +999,22 @@
       }).then(() => { alert("Hafta güncellendi! Kur'ân ilerledi, Sûreler ve Cevşen devredildi."); });
     }
 
-    // ARŞİVDEN GÜN SEÇİP İNCELEME
+    // ARŞİVDEN GÜN SEÇİP DÜZENLEME MODUNDA AÇMA
     function loadArchiveDay() {
       const selectKey = document.getElementById("archive-select").value;
       if (!selectKey) { alert("Lütfen arşivden bir tarih seçiniz."); return; }
-      viewingArchiveData = archiveDatesMap[selectKey];
-      if (viewingArchiveData) {
-        document.getElementById("archive-banner").style.display = "flex";
-        document.getElementById("archive-date-label").innerText = viewingArchiveData.programTarihi || "Geçmiş Tarih";
-        render(viewingArchiveData);
-      }
+      viewingArchiveKey = selectKey;
+      currentArchiveDataObject = JSON.parse(JSON.stringify(archiveDatesMap[selectKey])); // Derin kopya
+      
+      document.getElementById("archive-banner").style.display = "flex";
+      document.getElementById("archive-date-label").innerText = currentArchiveDataObject.programTarihi || "Geçmiş Tarih";
+      render(currentArchiveDataObject);
     }
 
     // CANLI PANOYA DÖNÜŞ
     function exitArchiveMode() {
-      viewingArchiveData = null;
+      viewingArchiveKey = null;
+      currentArchiveDataObject = null;
       document.getElementById("archive-banner").style.display = "none";
       document.getElementById("archive-select").value = "";
       render(liveState);
