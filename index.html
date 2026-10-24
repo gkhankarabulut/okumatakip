@@ -339,6 +339,18 @@
       border-radius: 8px;
       cursor: pointer;
     }
+    .archive-bar {
+      background: #fffbeb;
+      border: 1px solid #f59e0b;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      color: #92400e;
+    }
     .popup-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -468,6 +480,12 @@
   </div>
 
   <div class="container">
+    <!-- ARŞİVDEN İNCELENİYOR BİLDİRİM ÇUBUĞU -->
+    <div id="archive-banner" class="archive-bar" style="display:none;">
+      <span>📂 <b id="archive-date-label">Geçmiş Tarih</b> arşivinden inceliyorsunuz (Salt Okunur).</span>
+      <button style="background:#d97706; color:white; border:none; padding:5px 10px; border-radius:6px; cursor:pointer; font-weight:bold;" onclick="exitArchiveMode()">Canlı Panele Dön</button>
+    </div>
+
     <!-- Sadece Admine Görünen Canlı İlerleme Sayacı -->
     <div class="admin-stats-card" id="admin-stats-card">
       <h4>
@@ -486,10 +504,23 @@
         <div class="meta-text" id="last-updated-text">Son Güncelleme: ...</div>
         <div class="meta-text" style="color:var(--primary); font-weight:600; margin-top:4px;" id="sub-info">Bugün Vefa Duası: ...</div>
       </div>
-     <div class="btn-group" id="admin-actions-group" style="display:none;">
+      <div class="btn-group" id="admin-actions-group" style="display:none;">
         <button class="btn-admin" onclick="advanceToNextDay()">🌙 Sonraki Güne Geç</button>
         <button class="btn-admin btn-week" onclick="advanceToNextWeek()">🗓️ Yeni Haftaya Geç</button>
         <button class="btn-admin" style="background:#0284c7;" onclick="advanceToNextBook()">📚 Yeni Kitaba Geç</button>
+      </div>
+    </div>
+
+    <!-- GEÇMİŞ GÜNLER ARŞİV SEÇİCİ KARTI -->
+    <div class="section-card" style="background:#f1f5f9; padding:12px 18px;">
+      <h3 style="font-size:14px; margin-bottom:8px; border-bottom:none; padding-bottom:0; color:#475569;">
+        <span>📜 Geçmiş Günler Arşivi</span>
+      </h3>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <select id="archive-select" style="flex-grow:1; padding:8px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px;">
+          <option value="">Arşivden bir tarih seçin...</option>
+        </select>
+        <button onclick="loadArchiveDay()" style="background:#0284c7; color:white; border:none; padding:8px 14px; border-radius:8px; cursor:pointer; font-weight:bold; font-size:13px;">İncele</button>
       </div>
     </div>
 
@@ -734,10 +765,12 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const stateRef = db.ref("panoState");
+    const archiveRef = db.ref("arsiv");
 
     const USER_PASSWORD = "5300";
     const ADMIN_PASSWORD = "530033";
     let isAdmin = localStorage.getItem("is_admin_530033") === "true";
+    let viewingArchiveData = null; // Arşivden incelenen veri
 
     function checkPassword() {
       const input = document.getElementById("pass-input").value;
@@ -854,7 +887,9 @@
     };
 
     let liveState = defaultState;
+    let archiveDatesMap = {}; // Arşiv verilerini tutmak için
 
+    // Canlı Panoyu Dinle
     stateRef.on("value", (snapshot) => {
       const data = snapshot.val();
       if (!data) { stateRef.set(defaultState); } else {
@@ -865,13 +900,37 @@
           cevsenKisiler: data.cevsenKisiler || defaultState.cevsenKisiler,
           devirSayaci: data.devirSayaci || defaultState.devirSayaci
         };
-        render();
+        if (!viewingArchiveData) render(liveState);
       }
     });
 
-    function toggleTask(id) { const current = liveState.canliTikler && liveState.canliTikler[id]; stateRef.child("canliTikler").child(id).set(!current); }
+    // Arşiv Listesini Dinle
+    archiveRef.on("value", (snapshot) => {
+      const data = snapshot.val();
+      const select = document.getElementById("archive-select");
+      select.innerHTML = '<option value="">Arşivden bir tarih seçin...</option>';
+      archiveDatesMap = {};
+      if (data) {
+        Object.keys(data).forEach(key => {
+          let item = data[key];
+          let tarihAdi = item.programTarihi || key;
+          archiveDatesMap[key] = item;
+          let opt = document.createElement("option");
+          opt.value = key;
+          opt.innerText = tarihAdi;
+          select.appendChild(opt);
+        });
+      }
+    });
+
+    function toggleTask(id) { 
+      if (viewingArchiveData) { alert("Arşiv modundayken tik atılamaz, burası sadece inceleme içindir!"); return; }
+      const current = liveState.canliTikler && liveState.canliTikler[id]; 
+      stateRef.child("canliTikler").child(id).set(!current); 
+    }
 
     function promptEditAyet() {
+      if (viewingArchiveData) return;
       const yeniArapca = prompt("Yeni âyetin Arapça metnini giriniz:", liveState.ezberAyet.arapca); if (!yeniArapca) return;
       const yeniMeal = prompt("Yeni âyetin Türkçe mealini ve sûre adını giriniz:", liveState.ezberAyet.meal); if (!yeniMeal) return;
       stateRef.child("ezberAyet").set({ arapca: yeniArapca, meal: yeniMeal }).then(() => { alert("Ezber âyeti canlı olarak tüm grupta güncellendi!"); });
@@ -889,23 +948,27 @@
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
 
-    // GÜN ATLATMA: ARTIK TÜM TİKLER (RİSALE, TAHMİDİYE, DELAİL, CEVŞEN, SURE, KURAN) SIFIRLANIR!
+    // GÜN ATLATMA: ÖNCE MEVCUT GÜNÜ ARŞİVE KAYDEDER, SONRA YENİ GÜNE GEÇER
     function advanceToNextDay() {
-      if (!confirm("Günü ilerletmek istiyor musunuz? Tüm günlük ve haftalık sabit görevlerin tikleri temizlenecek.")) return;
+      if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün arşive kaydedilecek ve görevler sıfırlanacak.")) return;
+      
+      // 1. Mevcut günü arşive kopyala (Key olarak eski tarihi veya sayacı kullan)
+      let archiveKey = "gun_" + (liveState.gunSayaci || 1) + "_" + (liveState.programTarihi || "tarih").replace(/ /g, "_");
+      archiveRef.child(archiveKey).set(liveState);
+
+      // 2. Yeni gün hesaplamaları
       const yeniRisale = liveState.risaleSayfalari.map(item => ({ ...item, basla: item.basla + 3, bitir: item.bitir + 3 }));
       const yeniTahmidiye = [...liveState.tahmidiyeBloklar]; yeniTahmidiye.push(yeniTahmidiye.shift());
       const yeniDelail = [...liveState.delailBloklar]; yeniDelail.push(yeniDelail.shift());
       const yeniVefa = (liveState.vefaSirasi + 1) % vefaListesi.length; const yeniGun = (liveState.gunSayaci || 1) + 1;
 
-      // TÜM TİKLERİ TEMİZLİYORUZ (Çünkü her gün yeniden okunurlar)
       stateRef.update({
         programTarihi: getBugunYazi(), sonGuncelleme: formatNow(), gunSayaci: yeniGun,
         risaleSayfalari: yeniRisale, tahmidiyeBloklar: yeniTahmidiye, delailBloklar: yeniDelail,
         vefaSirasi: yeniVefa, canliTikler: {}
-      }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi! Tikler yenilendi.`); startPopupSequence(); });
+      }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi ve eski gün arşive kaldırıldı!`); startPopupSequence(); });
     }
 
-    // HAFTA ATLATMA: KUR'AN İLERLER, SURE VE CEVŞEN DEVREDER
     function advanceToNextWeek() {
       if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân ilerleyecek, Sûre ve Cevşen devredecek.")) return;
       const yeniKuran = liveState.kuranSayfalari.map(item => {
@@ -915,10 +978,8 @@
       });
       const sureler = liveState.sureNobetleri.map(item => item.s); sureler.unshift(sureler.pop());
       const yeniSureNobetleri = liveState.sureNobetleri.map((item, idx) => ({ isim: item.isim, s: sureler[idx] }));
-
       const yeniCevsenKisiler = [...(liveState.cevsenKisiler || defaultState.cevsenKisiler)];
       yeniCevsenKisiler.unshift(yeniCevsenKisiler.pop()); 
-
       const yeniHafta = (liveState.haftaSayaci || 25) + 1; const yeniSureHafta = (liveState.sureHaftaSayaci || 13) + 1;
 
       stateRef.update({
@@ -927,30 +988,50 @@
       }).then(() => { alert("Hafta güncellendi! Kur'ân ilerledi, Sûreler ve Cevşen devredildi."); });
     }
 
-    function render() {
-      if (!liveState || !liveState.ezberAyet) return;
-      const tikler = liveState.canliTikler || {};
+    // ARŞİVDEN GÜN SEÇİP İNCELEME
+    function loadArchiveDay() {
+      const selectKey = document.getElementById("archive-select").value;
+      if (!selectKey) { alert("Lütfen arşivden bir tarih seçiniz."); return; }
+      viewingArchiveData = archiveDatesMap[selectKey];
+      if (viewingArchiveData) {
+        document.getElementById("archive-banner").style.display = "flex";
+        document.getElementById("archive-date-label").innerText = viewingArchiveData.programTarihi || "Geçmiş Tarih";
+        render(viewingArchiveData);
+      }
+    }
 
-      document.getElementById("program-date-title").innerText = `📅 ${liveState.programTarihi || "19 Ekim 2026 Pazartesi"}`;
-      document.getElementById("last-updated-text").innerText = `Son Güncelleme: ${liveState.sonGuncelleme || "19.10.2026 – 00:00"}`;
-      document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[liveState.vefaSirasi || 0]}`;
-      document.getElementById("banner-arabic").innerText = liveState.ezberAyet.arapca;
-      document.getElementById("banner-meal").innerText = liveState.ezberAyet.meal;
-      document.getElementById("popup-arabic").innerText = liveState.ezberAyet.arapca;
-      document.getElementById("popup-meal").innerHTML = liveState.ezberAyet.meal;
+    // CANLI PANOYA DÖNÜŞ
+    function exitArchiveMode() {
+      viewingArchiveData = null;
+      document.getElementById("archive-banner").style.display = "none";
+      document.getElementById("archive-select").value = "";
+      render(liveState);
+    }
 
-      const kitap = liveState.kitapAdi || "Mektubat (575 s.)";
-      const devir = liveState.devirSayaci || 3; 
+    function render(stateObj) {
+      if (!stateObj || !stateObj.ezberAyet) return;
+      const tikler = stateObj.canliTikler || {};
+
+      document.getElementById("program-date-title").innerText = `📅 ${stateObj.programTarihi || "19 Ekim 2026 Pazartesi"}`;
+      document.getElementById("last-updated-text").innerText = `Son Güncelleme: ${stateObj.sonGuncelleme || "19.10.2026 – 00:00"}`;
+      document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[stateObj.vefaSirasi || 0]}`;
+      document.getElementById("banner-arabic").innerText = stateObj.ezberAyet.arapca;
+      document.getElementById("banner-meal").innerText = stateObj.ezberAyet.meal;
+      document.getElementById("popup-arabic").innerText = stateObj.ezberAyet.arapca;
+      document.getElementById("popup-meal").innerHTML = stateObj.ezberAyet.meal;
+
+      const kitap = stateObj.kitapAdi || "Mektubat (575 s.)";
+      const devir = stateObj.devirSayaci || 3; 
       
-      document.getElementById("risale-title").innerHTML = `📗 ${devir}. Devir: ${kitap} – ${liveState.gunSayaci || 1}. gün <span class="tag">Her gün +3 Sayfa</span>`;
-      document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${liveState.sureHaftaSayaci || 14}. Hafta) <span class="tag">Haftalık Devir</span>`;
-      document.getElementById("kuran-title").innerHTML = `📖 Kur’ân-ı Azîmüşşan Okuması (${liveState.haftaSayaci || 26}. Hafta) <span class="tag">Haftalık +20 Sayfa</span>`;
+      document.getElementById("risale-title").innerHTML = `📗 ${devir}. Devir: ${kitap} – ${stateObj.gunSayaci || 1}. gün <span class="tag">Her gün +3 Sayfa</span>`;
+      document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${stateObj.sureHaftaSayaci || 14}. Hafta) <span class="tag">Haftalık Devir</span>`;
+      document.getElementById("kuran-title").innerHTML = `📖 Kur’ân-ı Azîmüşşan Okuması (${stateObj.haftaSayaci || 26}. Hafta) <span class="tag">Haftalık +20 Sayfa</span>`;
 
       let totalTasks = 0; let completedTasks = 0;
       function checkCounter(id) { totalTasks++; if (tikler[id]) completedTasks++; }
 
       // 1. Risale
-      document.getElementById("list-risale").innerHTML = liveState.risaleSayfalari.map((item, idx) => {
+      document.getElementById("list-risale").innerHTML = stateObj.risaleSayfalari.map((item, idx) => {
         const id = 'r_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
@@ -958,19 +1039,19 @@
       }).join("");
 
       // 2. Tahmidiye
-      document.getElementById("list-tahmidiye").innerHTML = liveState.tahmidiyeKisiler.map((kisi, idx) => {
+      document.getElementById("list-tahmidiye").innerHTML = stateObj.tahmidiyeKisiler.map((kisi, idx) => {
         const id = 't_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
-            <div class="task-details"><div class="name">${kisi}</div><div class="meta">${liveState.tahmidiyeBloklar[idx]}. Bölüm</div></div></div></div>`;
+            <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.tahmidiyeBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
       // 3. Delail
-      document.getElementById("list-delail").innerHTML = liveState.delailKisiler.map((kisi, idx) => {
+      document.getElementById("list-delail").innerHTML = stateObj.delailKisiler.map((kisi, idx) => {
         const id = 'd_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
-            <div class="task-details"><div class="name">${kisi}</div><div class="meta">${liveState.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
+            <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
       // 4. Sekine
@@ -981,15 +1062,15 @@
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
 
       // 5. Cevsen
-      document.getElementById("list-cevsen").innerHTML = (liveState.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
+      document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
-            <div class="task-details"><div class="name">${kisi}</div><div class="meta">${liveState.cevsenBloklar[idx]} Babları</div></div></div></div>`;
+            <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.cevsenBloklar[idx]} Babları</div></div></div></div>`;
       }).join("");
 
       // 6. Sure 
-      document.getElementById("list-sure").innerHTML = (liveState.sureNobetleri || []).map((s, idx) => {
+      document.getElementById("list-sure").innerHTML = (stateObj.sureNobetleri || []).map((s, idx) => {
         const id = 'sur_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
@@ -998,7 +1079,7 @@
       }).join("");
 
       // 7. Kuran
-      document.getElementById("list-kuran").innerHTML = (liveState.kuranSayfalari || []).map((k, idx) => {
+      document.getElementById("list-kuran").innerHTML = (stateObj.kuranSayfalari || []).map((k, idx) => {
         const id = 'kur_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
@@ -1191,7 +1272,7 @@
             } else { 
               let okumaBirimi = (hedef.asliProgram === "Risale") ? "Sayfa" : hedef.tur; let sayfaEki = (hedef.asliProgram === "Risale") ? ". Sayfa" : "";
               gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} ${hedef.miktar} ${okumaBirimi} (Devam eden: <b style="color:#0ea5e9">${hedef.baslangic}${sayfaEki}</b>)`;
-              aksiyonButonlari = `<button class="btn-kucuk geri" onclick="sahsiHedefGeriAl(${kisiIndex}, ${hedefIndex})","⏮️ Geri</button><button class="btn-kucuk ileri" onclick="sahsiHedefIlerlet(${kisiIndex}, ${hedefIndex})">⏭️ İlerle</button><button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
+              aksiyonButonlari = `<button class="btn-kucuk geri" onclick="sahsiHedefGeriAl(${kisiIndex}, ${hedefIndex})">⏮️ Geri</button><button class="btn-kucuk ileri" onclick="sahsiHedefIlerlet(${kisiIndex}, ${hedefIndex})">⏭️ İlerle</button><button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
             }
             hDiv.innerHTML = `<div class="sahsi-hedef-sol"><input type="checkbox" ${hedef.tikli ? "checked" : ""} onchange="sahsiTikDegistir(${kisiIndex}, ${hedefIndex}, this.checked)"><span style="color:#4b5563;">${gosterimMetni}</span></div><div class="sahsi-hedef-aksiyonlar">${aksiyonButonlari}</div>`;
             hedefListesiDiv.appendChild(hDiv);
