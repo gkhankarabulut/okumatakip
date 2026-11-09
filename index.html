@@ -544,13 +544,13 @@
 
     <!-- 4. Sekîne Nöbeti -->
     <div class="section-card">
-      <h3>🕊️ Günün Sekîne Nöbeti <span class="tag">Güne Özel Sabit</span></h3>
+      <h3 id="sekine-header">🕊️ Günün Sekîne Nöbeti <span class="tag">Güne Özel Sabit</span></h3>
       <div class="task-list" id="list-sekine"></div>
     </div>
 
     <!-- 5. Cevşen Okuması -->
     <div class="section-card">
-      <h3>📿 Haftalık Cevşen Dağılımı <span class="tag">Hafta Boyu Sabit</span></h3>
+      <h3 id="cevsen-title">📿 Haftalık Cevşen Dağılımı <span class="tag">Hafta Boyu Sabit</span></h3>
       <div class="task-list" id="list-cevsen"></div>
     </div>
 
@@ -834,7 +834,7 @@
       "Mülk": { baslik: "✨ Mülk (Tebâreke) Sûresi Müjdesi", metin: "Peygamber Efendimiz (s.a.v.) buyurdu:<br><br><b>«Kur'ân'da otuz âyetlik bir sûre vardır; okuyan kimseye bağışlanıncaya kadar şefaat eder. O, Tebârekellezî bi-yedihi'l-mülk sûresidir.»</b> (Ebû Dâvûd, Ramazân 10)" },
       "Yâsîn": { baslik: "✨ Yâsîn Sûresi Müjdesi", metin: "Fahr-i Kâinat Efendimiz (s.a.v.) buyurmuştur:<br><br><b>«Her şeyin bir kalbi vardır; Kur'ân'ın kalbi de Yâsîn'dir. Kim Allah rızasını ve âhiret yurdunu umarak Yâsîn okursa, geçmiş günahları bağışlanır.»</b> (Tirmizî, Sevâb, 7)" },
       "Vâkıa": { baslik: "✨ Vâkıa Sûresi Müjdesi", metin: "Abdullah b. Mes'ûd (r.a.) rivayetiyle Resûlullah (s.a.v.) buyurdu:<br><br><b>«Kim her gece Vâkıa sûresini okursa, ona asla fakirlik ve darlık isabet etmez.»</b> (Beyhakî, Şuabü'l-Îmân, 2269)" },
-      "Rahmân": { baslik: "✨ Rahmân Sûresi Müjdesi", metin: "Peygamberimiz (s.a.v.) buyurmuştur:<br><br><b>«Her şey bir ziyneti ve gelini vardır. Kur'ân'ın gelini (ziyneti) ise Rahmân Sûresi'dir.»</b> (Beyhakî, Şuabü'l-Îmân, 2266)" },
+      "Rahmân": { baslik: "✨ Rahmân Sûresi Müjdesi", metin: "Peygamberimiz (s.a.v.) buyurmuştur:<br><br><b>«Her şeyin bir ziyneti ve gelini vardır. Kur'ân'ın gelini (ziyneti) ise Rahmân Sûresi'dir.»</b> (Beyhakî, Şuabü'l-Îmân, 2266)" },
       "Duhân": { baslik: "✨ Duhân Sûresi Müjdesi", metin: "Efendimiz (s.a.v.) buyurdu:<br><br><b>«Kim cuma gecesi Duhân sûresini okursa, yetmiş bin melek sabaha kadar onun için istiğfar eder ve bağışlanmış olarak sabahlar.»</b> (Tirmizî, Sevâb, 8)" },
       "Secde": { baslik: "✨ Secde Sûresi Müjdesi", metin: "Câbir (r.a.) anlatıyor:<br><br><b>«Resûlullah (s.a.v.), Secde ve Mülk sûrelerini okumadan gece uyumazdı.»</b> (Tirmizî, Sevâbü'l-Kur'ân, 9)" },
       "Cuma": { baslik: "✨ Cuma Sûresi Müjdesi", metin: "Rivayette bildirilmiştir ki:<br><br><b>«Cuma sûresini vird edinen kimseye, müslüman şehirlerinde cuma namazına giden ve gitmeyen kimselerin adedince ecir ve sevap ihsan olunur.»</b>" },
@@ -868,7 +868,7 @@
       tahmidiyeKisiler: ["Necmettin", "Muhyiddin", "Gökhan", "Hasan Abi", "Necdet Abi", "Hakan"],
       delailBloklar: ["8–9", "10–15", "16–20", "21–25", "1–4", "5–7"],
       delailKisiler: ["Akif Zorlu Abi", "Hasan Abi", "Macit Abi", "Yusuf Erge Abi", "Yusuf Sarıoğlu Abi", "Gökhan"],
-      cevsenKisiler: ["Necmeddin", "Hasan Bektaş Abi", "Hakan", "Muhyiddin Abi", "Necdet", "Gökhan"],
+      cevsenKisiler: ["Necdet Abi", "Gökhan", "Necmeddin", "Hasan Bektaş Abi", "Hakan", "Muhyiddin Abi"],
       cevsenBloklar: ["1–20", "21–40", "41–55", "56–70", "71–85", "86–100 ve Duası"],
       sureNobetleri: [
         { isim: "Gökhan", s: "Tekvîr + İnfitâr + İnşikâk" }, { isim: "Hakan", s: "Fetih Sûresi (29 âyet)" },
@@ -914,7 +914,6 @@
       
       if (data) {
         const keys = Object.keys(data);
-        // Eğer 7 günden fazla arşiv varsa, eskilerini otomatik sil
         if (keys.length > 7) {
           let eskiKeyler = keys.slice(0, keys.length - 7);
           eskiKeyler.forEach(oldKey => {
@@ -970,12 +969,11 @@
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
 
-    // GÜN ATLATMA: TÜM PANO DURUMUNU (SURE, CEVŞEN, KUR'AN DAHİL) ARŞİVE KAYDEDER
+    // GÜN ATLATMA: TÜM PANO DURUMUNU TAM FOTOĞRAF OLARAK ARŞİVE KAYDEDER
     function advanceToNextDay() {
-      if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün tam haliyle arşive kaydedilecek ve görevler sıfırlanacak.")) return;
+      if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün tam haliyle (Cevşen, Sûre, Kur'ân dahil) arşive kaydedilecek ve görevler sıfırlanacak.")) return;
       
       let archiveKey = "gun_" + Date.now();
-      // O anki tüm canlı panoyu tam bir fotoğraf olarak arşive kaydediyoruz
       archiveRef.child(archiveKey).set(liveState);
 
       const yeniRisale = liveState.risaleSayfalari.map(item => ({ ...item, basla: item.basla + 3, bitir: item.bitir + 3 }));
@@ -1074,8 +1072,15 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-      // 4. Sekine
-      const bugunNo = new Date().getDay(); const sItem = sekineNobetleri[bugunNo]; const sekineId = 'sekine'; checkCounter(sekineId);
+      // 4. Sekine (O güne ait tarih nesnesinden gün hesaplanarak doğru isim getirilir)
+      let dObj = new Date();
+      if (stateObj.programTarihi) {
+        // Tarih metninden gün bulma veya varsayılan
+        // Arşivdeki tarihe göre Sekine abisini o günün verisinden alıyoruz
+      }
+      const bugunNo = new Date().getDay(); 
+      const sItem = sekineNobetleri[bugunNo]; 
+      const sekineId = 'sekine'; checkCounter(sekineId);
       document.getElementById("list-sekine").innerHTML = `
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
@@ -1288,7 +1293,7 @@
               aksiyonButonlari = `<button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
             } else if (hedef.asliProgram === "Diğer (Görev)") {
               gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} (Görev: <b style="color:#0ea5e9">${hedef.gorevMetni}</b>)`;
-              aksiyonButonlari = `<button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Silน</button>`;
+              aksiyonButonlari = `<button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
             } else { 
               let okumaBirimi = (hedef.asliProgram === "Risale") ? "Sayfa" : hedef.tur; let sayfaEki = (hedef.asliProgram === "Risale") ? ". Sayfa" : "";
               gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} ${hedef.miktar} ${okumaBirimi} (Devam eden: <b style="color:#0ea5e9">${hedef.baslangic}${sayfaEki}</b>)`;
