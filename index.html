@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Şahsi Okumalar ve Medya Paneli</title>
-    <!-- Firebase SDK (Sayaç ve veriler için) -->
+    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -48,10 +48,12 @@
         .btn-video {
             background-color: #007bff;
             color: white;
+            flex: 1;
         }
         .btn-foto {
             background-color: #ff9800;
             color: white;
+            flex: 1;
         }
         #fotoSecenekPaneli {
             display: none;
@@ -75,10 +77,10 @@
             
             <div class="buton-grubu">
                 <button class="btn-video" onclick="videoIndirIslemi()">📥 Video İndir</button>
-                <button class="btn-foto" onclick="fotoSecenekleriniAc()">📸 Foto Al</button>
+                <button class="btn-foto" onclick="fotoSecenekleriniAc()">📸 Foto Al (Aç/Kapat)</button>
             </div>
 
-            <!-- Fotoğraf Çekim Seçenek Paneli (Butona basınca açılır) -->
+            <!-- Fotoğraf Çekim Seçenek Paneli (Başlangıçta gizlidir, butona basınca açılır/kapanır) -->
             <div id="fotoSecenekPaneli">
                 <p style="margin-top:0;"><b>📸 2K / 4K Fotoğraf / Kare Seçenekleri:</b></p>
                 
@@ -98,13 +100,12 @@
                 <input type="text" id="manuelSaniyeler" placeholder="5, 15, 45" style="margin-top: 5px;">
                 
                 <br>
-                <button onclick="fotoIndirBaslat()" style="background-color: #28a745; color: white; padding: 10px 20px; width: 100%; margin-top: 10px;">Kareleri İndir</button>
+                <button onclick="fotoIndirBaslat()" style="background-color: #28a745; color: white; padding: 10px 20px; width: 100%; margin-top: 10px;">Seçilen Saniyeden Fotoğraf Al</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Firebase Yapılandırması (Kendi proje bilgilerin burada olmalı)
         const firebaseConfig = {
             databaseURL: "https://okumatakip-default-rtdb.firebaseio.com/"
         };
@@ -129,14 +130,12 @@
                 return;
             }
 
-            // Sayacı artır
             db.ref("panoState/medyaSayaci").transaction((currentValue) => {
                 return (currentValue || 0) + 1;
             });
 
-            alert("Video indirme talebiniz alındı! (Arka plan bulut motoru aktifleştiriliyor...)");
+            alert("Video indirme talebiniz alındı!");
 
-            // Python sunucusuna istek at
             fetch('http://127.0.0.1:5000/indir', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -148,7 +147,7 @@
             })
             .catch((error) => {
                 console.error('Hata:', error);
-                alert("İndirme talebi gönderildi fakat sunucuya ulaşılamadı.");
+                alert("Sunucuya ulaşılamadı.");
             });
 
             urlInput.value = "";
@@ -172,17 +171,14 @@
                 return;
             }
 
-            // Manuel saniye girildiyse onu, girilmediyse listedekini al
             let hedefSaniyeler = manuelSaniyeler !== "" ? manuelSaniyeler : secilenSaniye;
 
-            // Sayacı artır
             db.ref("panoState/medyaSayaci").transaction((currentValue) => {
                 return (currentValue || 0) + 1;
             });
 
-            alert("Ekran görüntüsü (foto) alma talebiniz alındı! (İşlem başlatılıyor...)");
+            alert("Fotoğraf alma talebiniz alındı!");
 
-            // Python sunucusuna istek gönder
             fetch('http://127.0.0.1:5000/foto-al', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -190,12 +186,12 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert("Fotoğraf/Kareler başarıyla indirildi! Mesaj: " + data.mesaj);
+                alert("İşlem başarılı! Mesaj: " + data.mesaj);
                 document.getElementById("fotoSecenekPaneli").style.display = "none";
             })
             .catch((error) => {
                 console.error('Hata:', error);
-                alert("İstek gönderildi fakat sunucuya ulaşılamadı.");
+                alert("Sunucuya ulaşılamadı.");
             });
 
             urlInput.value = "";
