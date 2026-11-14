@@ -1325,17 +1325,34 @@
       }
     });
 
-    function videoIndirIslemi() {
+  function videoIndirIslemi() {
       const urlInput = document.getElementById("medyaUrl");
       const url = urlInput.value.trim();
       if (!url) {
         alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
         return;
       }
+
+      // Sayacı artır
       db.ref("panoState/medyaSayaci").transaction((currentValue) => {
         return (currentValue || 0) + 1;
       });
-      alert("Video indirme talebiniz alındı! (Arka plan bulut motoru aktifleşiyor...)");
+
+      // Bilgisayarımızdaki Python sunucusuna istek gönderiyoruz
+      fetch('http://127.0.0.1:5000/indir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url, tur: 'video' })
+      })
+      .then(response => response.json())
+      .then(data => {
+        alert("Video başarıyla indirildi! Mesaj: " + data.mesaj);
+      })
+      .catch((error) => {
+        console.error('Hata:', error);
+        alert("İndirme talebi gönderildi fakat sunucuya ulaşılamadı.");
+      });
+
       urlInput.value = "";
     }
 
