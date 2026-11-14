@@ -569,20 +569,6 @@
     <!-- Sayfa Altı Kolay Giriş / Çıkış Butonu -->
     <button class="admin-switch-btn" id="admin-switch-btn" onclick="toggleAdminPrompt()">🔑 Yönetici Girişi Yap</button>
 
-<!-- YENİ MEDYA İNDİRME PANELİ -->
-    <div class="section-card" style="background: #f0fdf4; border: 2px dashed #059669;">
-      <h3 style="color: #064e3b; border-bottom: 2px solid #a7f3d0; margin-bottom: 12px;">
-        <span>🎬 Video ve Fotoğraf İndirme Paneli</span>
-        <span class="tag" style="background:#059669; color:white;" id="medyaSayac">Toplam: 0</span>
-      </h3>
-      <div style="display: flex; flex-direction: column; gap: 10px;">
-        <input type="text" id="medyaUrl" placeholder="YouTube, X veya Instagram linkini buraya yapıştırın..." style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;">
-        <div style="display: flex; gap: 10px;">
-          <button onclick="videoIndirIslemi()" style="flex: 1; background: #064e3b; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;">📥 Video İndir</button>
-          <button onclick="fotoAlIslemi()" style="flex: 1; background: #d97706; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer;">📸 Foto Al</button>
-        </div>
-      </div>
-    </div>
     <!-- YENİ MEDYA İNDİRME PANELİ -->
     <div class="section-card" style="background: #f0fdf4; border: 2px dashed #059669;">
       <h3 style="color: #064e3b; border-bottom: 2px solid #a7f3d0; margin-bottom: 12px;">
@@ -597,6 +583,7 @@
         </div>
       </div>
     </div>
+
     <!-- ŞAHSİ HEDEFLER BÖLÜMÜ (EN ALT) -->
     <div class="sahsi-card">
       <div class="sahsi-baslik-alani">
@@ -779,42 +766,6 @@
   </div>
 
   <script>
-    // --- VİDEO VE FOTOĞRAF İNDİRME SAYACI VE İŞLEMLERİ ---
-    db.ref("panoState/medyaSayaci").on("value", (snapshot) => {
-      const sayi = snapshot.val() || 0;
-      const sayacElementi = document.getElementById("medyaSayac");
-      if (sayacElementi) {
-        sayacElementi.innerText = `Toplam: ${sayi}`;
-      }
-    });
-
-    function videoIndirIslemi() {
-      const urlInput = document.getElementById("medyaUrl");
-      const url = urlInput.value.trim();
-      if (!url) {
-        alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
-        return;
-      }
-      db.ref("panoState/medyaSayaci").transaction((currentValue) => {
-        return (currentValue || 0) + 1;
-      });
-      alert("Video indirme talebiniz alındı! (Arka plan bulut motoru aktifleşiyor...)");
-      urlInput.value = "";
-    }
-
-    function fotoAlIslemi() {
-      const urlInput = document.getElementById("medyaUrl");
-      const url = urlInput.value.trim();
-      if (!url) {
-        alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
-        return;
-      }
-      db.ref("panoState/medyaSayaci").transaction((currentValue) => {
-        return (currentValue || 0) + 1;
-      });
-      alert("Ekran görüntüsü (foto) alma talebiniz alındı! (İşlem başlatılıyor...)");
-      urlInput.value = "";
-    }
     // --- ANA PROJE JAVASCRIPT ---
     const firebaseConfig = {
       apiKey: "AIzaSyCjSWX_W2e91f87VWrSxARMvsB_kTHXI5o",
@@ -978,7 +929,6 @@
       
       if (data) {
         let keys = Object.keys(data);
-        // Eğer 7 günden fazla kayıt varsa, en eski olanları doğrudan veritabanından siliyoruz ki menü tertemiz kalsın
         if (keys.length > 7) {
           let eskiKeyler = keys.slice(0, keys.length - 7);
           eskiKeyler.forEach(oldKey => {
@@ -1034,7 +984,6 @@
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
 
-    // GÜN ATLATMA: TÜM PANO DURUMUNU TAM FOTOĞRAF OLARAK ARŞİVE KAYDEDER
     function advanceToNextDay() {
       if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün tam haliyle arşive kaydedilecek ve görevler sıfırlanacak.")) return;
       
@@ -1365,6 +1314,43 @@
         solTaraf.appendChild(hedefListesiDiv); let sagTaraf = document.createElement("div"); sagTaraf.innerHTML = `<button class="btn-ekle" onclick="sahsiModalAc(${kisiIndex})">➕ Ekle</button>`;
         div.appendChild(solTaraf); div.appendChild(sagTaraf); alan.appendChild(div);
       });
+    }
+
+    // --- VİDEO VE FOTOĞRAF İNDİRME SAYACI VE İŞLEMLERİ (EN ALTA EKLENDİ) ---
+    db.ref("panoState/medyaSayaci").on("value", (snapshot) => {
+      const sayi = snapshot.val() || 0;
+      const sayacElementi = document.getElementById("medyaSayac");
+      if (sayacElementi) {
+        sayacElementi.innerText = `Toplam: ${sayi}`;
+      }
+    });
+
+    function videoIndirIslemi() {
+      const urlInput = document.getElementById("medyaUrl");
+      const url = urlInput.value.trim();
+      if (!url) {
+        alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
+        return;
+      }
+      db.ref("panoState/medyaSayaci").transaction((currentValue) => {
+        return (currentValue || 0) + 1;
+      });
+      alert("Video indirme talebiniz alındı! (Arka plan bulut motoru aktifleşiyor...)");
+      urlInput.value = "";
+    }
+
+    function fotoAlIslemi() {
+      const urlInput = document.getElementById("medyaUrl");
+      const url = urlInput.value.trim();
+      if (!url) {
+        alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
+        return;
+      }
+      db.ref("panoState/medyaSayaci").transaction((currentValue) => {
+        return (currentValue || 0) + 1;
+      });
+      alert("Ekran görüntüsü (foto) alma talebiniz alındı! (İşlem başlatılıyor...)");
+      urlInput.value = "";
     }
   </script>
 </body>
