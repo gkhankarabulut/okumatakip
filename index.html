@@ -39,7 +39,7 @@
             gap: 10px;
         }
         button {
-            padding: 10px 20px;
+            padding: 8px 15px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -63,6 +63,10 @@
             border-radius: 5px;
             background: #fff8f0;
         }
+        .kisi-kutu {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -80,7 +84,7 @@
                 <button class="btn-foto" onclick="fotoSecenekleriniAc()">📸 Foto Al (Aç/Kapat)</button>
             </div>
 
-            <!-- Fotoğraf Çekim Seçenek Paneli (Başlangıçta gizlidir, butona basınca açılır/kapanır) -->
+            <!-- Fotoğraf Çekim Seçenek Paneli -->
             <div id="fotoSecenekPaneli">
                 <p style="margin-top:0;"><b>📸 2K / 4K Fotoğraf / Kare Seçenekleri:</b></p>
                 
@@ -101,6 +105,14 @@
                 
                 <br>
                 <button onclick="fotoIndirBaslat()" style="background-color: #28a745; color: white; padding: 10px 20px; width: 100%; margin-top: 10px;">Seçilen Saniyeden Fotoğraf Al</button>
+            </div>
+        </div>
+
+        <!-- Şahsi Okumalar ve Görevler Paneli -->
+        <div class="panel">
+            <h3>🎯 Şahsi Okumalar ve Görevler</h3>
+            <div id="okumaListesiContainer">
+                <!-- Firebase'den gelen okuma/görev listesi buraya yüklenecek -->
             </div>
         </div>
     </div>
