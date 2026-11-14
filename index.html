@@ -511,10 +511,10 @@
       </div>
     </div>
 
-    <!-- GEÇMİŞ GÜNLER ARŞİV SEÇİCİ KARTI (Sadece Son 7 Gün) -->
+    <!-- GEÇMİŞ GÜNLER ARŞİV SEÇİCİ KARTI (Sadece Son 7 Gün - Kesin Filtre) -->
     <div class="section-card" style="background:#f1f5f9; padding:12px 18px;">
       <h3 style="font-size:14px; margin-bottom:8px; border-bottom:none; padding-bottom:0; color:#475569;">
-        <span>📜 Geçmiş Günler Arşivi (Son 7 Gün)</span>
+        <span>📜 Geçmiş Günler Arşivi (Kesin Son 7 Gün)</span>
       </h3>
       <div style="display:flex; gap:10px; align-items:center;">
         <select id="archive-select" style="flex-grow:1; padding:8px; border-radius:8px; border:1px solid #cbd5e1; font-size:14px;">
@@ -852,17 +852,17 @@
     }
 
     const defaultState = {
-      programTarihi: "19 Ekim 2026 Pazartesi", sonGuncelleme: "19.10.2026 – 00:00",
-      kitapAdi: "Mektubat (575 s.)", gunSayaci: 1, haftaSayaci: 26, sureHaftaSayaci: 14, devirSayaci: 3,
+      programTarihi: "14 Kasım 2026 Cumartesi", sonGuncelleme: "14.11.2026 – 06:00",
+      kitapAdi: "Lemalar (498 s.)", gunSayaci: 4, haftaSayaci: 30, sureHaftaSayaci: 18, devirSayaci: 3,
       ezberAyet: {
         arapca: "سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ",
         meal: '"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)'
       },
       risaleSayfalari: [
-        { isim: "Yusuf Erge Abi", basla: 4, bitir: 6, max: 26 }, { isim: "Yusuf Sarıoğlu Abi", basla: 30, bitir: 32, max: 52 },
-        { isim: "Gökhan", basla: 56, bitir: 58, max: 78 }, { isim: "Hasan Bektaş Abi", basla: 82, bitir: 84, max: 104 },
-        { isim: "Macit Abi", basla: 108, bitir: 110, max: 130 }, { isim: "Muhyiddin", basla: 134, bitir: 136, max: 156 },
-        { isim: "Necdet Abi", basla: 160, bitir: 162, max: 182 }, { isim: "Hakan", basla: 186, bitir: 188, max: 208 }
+        { isim: "Hakan", basla: 10, bitir: 12, max: 63 }, { isim: "Yusuf Erge Abi", basla: 73, bitir: 75, max: 126 },
+        { isim: "Yusuf Sarıoğlu Abi", basla: 136, bitir: 138, max: 189 }, { isim: "Gökhan", basla: 199, bitir: 201, max: 252 },
+        { isim: "Hasan Bektaş Abi", basla: 262, bitir: 264, max: 315 }, { isim: "Macit Abi", basla: 325, bitir: 327, max: 378 },
+        { isim: "Muhyiddin", basla: 388, bitir: 390, max: 441 }, { isim: "Necdet Abi", basla: 451, bitir: 453, max: 498 }
       ],
       tahmidiyeBloklar: ["10–12", "13–16", "17–20", "1–3", "4–6", "7–9"],
       tahmidiyeKisiler: ["Necmettin", "Muhyiddin", "Gökhan", "Hasan Abi", "Necdet Abi", "Hakan"],
@@ -871,18 +871,18 @@
       cevsenKisiler: ["Necdet Abi", "Gökhan", "Necmeddin", "Hasan Bektaş Abi", "Hakan", "Muhyiddin Abi"],
       cevsenBloklar: ["1–20", "21–40", "41–55", "56–70", "71–85", "86–100 ve Duası"],
       sureNobetleri: [
-        { isim: "Gökhan", s: "Tekvîr + İnfitâr + İnşikâk" }, { isim: "Hakan", s: "Fetih Sûresi (29 âyet)" },
-        { isim: "Macit Abi", s: "Mülk Sûresi (30 âyet)" }, { isim: "Necdet Abi", s: "Cuma Sûresi (11 âyet)" },
-        { isim: "Necmettin", s: "Rahmân Sûresi (78 âyet)" }, { isim: "Yusuf Erge Abi", s: "Duhân Sûresi (59 âyet)" },
-        { isim: "Yusuf Sarıoğlu Abi", s: "Yâsîn Sûresi (83 âyet)" }, { isim: "Hasan Abi", s: "Secde Sûresi (30 âyet)" },
-        { isim: "Mesut", s: "Vâkıa Sûresi (96 âyet)" }, { isim: "Muhyiddin", s: "Saff Sûresi (14 âyet)" }
+        { isim: "Gökhan", s: "Duhân Sûresi (59 âyet)" }, { isim: "Hakan", s: "Yâsîn Sûresi (83 âyet)" },
+        { isim: "Macit Abi", s: "Secde Sûresi (30 âyet)" }, { isim: "Necdet Abi", s: "Vâkıa Sûresi (96 âyet)" },
+        { isim: "Necmettin", s: "Saff Sûresi (14 âyet)" }, { isim: "Yusuf Erge Abi", s: "Tekvîr + İnfitâr + İnşikâk" },
+        { isim: "Yusuf Sarıoğlu Abi", s: "Fetih Sûresi (29 âyet)" }, { isim: "Hasan Abi", s: "Mülk Sûresi (30 âyet)" },
+        { isim: "Mesut", s: "Cuma Sûresi (11 âyet)" }, { isim: "Muhyiddin", s: "Rahmân Sûresi (78 âyet)" }
       ],
       kuranSayfalari: [
-        { isim: "Yusuf Sarıoğlu Abi", basla: 481, bitir: 482 }, { isim: "Ercan Abi", basla: 483, bitir: 484 },
-        { isim: "Gökhan", basla: 485, bitir: 485 }, { isim: "Necmettin", basla: 486, bitir: 486 },
-        { isim: "Mehmet Biber", basla: 487, bitir: 488 }, { isim: "Hakan", basla: 489, bitir: 490 },
-        { isim: "Macit Abi", basla: 491, bitir: 492 }, { isim: "Muhyiddin", basla: 493, bitir: 494 },
-        { isim: "Necdet Abi", basla: 495, bitir: 496 }, { isim: "Mesut", basla: 497, bitir: 498 }, { isim: "Yusuf Erge Abi", basla: 499, bitir: 500 }
+        { isim: "Yusuf Sarıoğlu Abi", basla: 581, bitir: 582 }, { isim: "Ercan Abi", basla: 583, bitir: 584 },
+        { isim: "Gökhan", basla: 585, bitir: 585 }, { isim: "Necmettin", basla: 586, bitir: 586 },
+        { isim: "Mehmet Biber", basla: 587, bitir: 588 }, { isim: "Hakan", basla: 589, bitir: 590 },
+        { isim: "Macit Abi", basla: 591, bitir: 592 }, { isim: "Muhyiddin", basla: 593, bitir: 594 },
+        { isim: "Necdet Abi", basla: 595, bitir: 596 }, { isim: "Mesut", basla: 597, bitir: 598 }, { isim: "Yusuf Erge Abi", basla: 599, bitir: 600 }
       ], vefaSirasi: 0, canliTikler: {}
     };
 
@@ -905,7 +905,7 @@
       }
     });
 
-    // Arşiv Listesini Dinle (Sadece Son 7 Günü Al ve Temizle)
+    // ARŞİV KESİN 7 GÜN TEMİZLİK FİLTRESİ (Eski Ekim kayıtları otomatik temizlenir)
     archiveRef.on("value", (snapshot) => {
       const data = snapshot.val();
       const select = document.getElementById("archive-select");
@@ -913,7 +913,8 @@
       archiveDatesMap = {};
       
       if (data) {
-        const keys = Object.keys(data);
+        let keys = Object.keys(data);
+        // Eğer 7 günden fazla kayıt varsa, en eski olanları doğrudan veritabanından siliyoruz ki menü tertemiz kalsın
         if (keys.length > 7) {
           let eskiKeyler = keys.slice(0, keys.length - 7);
           eskiKeyler.forEach(oldKey => {
@@ -971,7 +972,7 @@
 
     // GÜN ATLATMA: TÜM PANO DURUMUNU TAM FOTOĞRAF OLARAK ARŞİVE KAYDEDER
     function advanceToNextDay() {
-      if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün tam haliyle (Cevşen, Sûre, Kur'ân dahil) arşive kaydedilecek ve görevler sıfırlanacak.")) return;
+      if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün tam haliyle arşive kaydedilecek ve görevler sıfırlanacak.")) return;
       
       let archiveKey = "gun_" + Date.now();
       archiveRef.child(archiveKey).set(liveState);
@@ -1030,20 +1031,20 @@
       if (!stateObj || !stateObj.ezberAyet) return;
       const tikler = stateObj.canliTikler || {};
 
-      document.getElementById("program-date-title").innerText = `📅 ${stateObj.programTarihi || "19 Ekim 2026 Pazartesi"}`;
-      document.getElementById("last-updated-text").innerText = `Son Güncelleme: ${stateObj.sonGuncelleme || "19.10.2026 – 00:00"}`;
+      document.getElementById("program-date-title").innerText = `📅 ${stateObj.programTarihi || "14 Kasım 2026 Cumartesi"}`;
+      document.getElementById("last-updated-text").innerText = `Son Güncelleme: ${stateObj.sonGuncelleme || "14.11.2026 – 06:00"}`;
       document.getElementById("sub-info").innerText = `Bugün Vefa Duası: ${vefaListesi[stateObj.vefaSirasi || 0]}`;
       document.getElementById("banner-arabic").innerText = stateObj.ezberAyet.arapca;
       document.getElementById("banner-meal").innerText = stateObj.ezberAyet.meal;
       document.getElementById("popup-arabic").innerText = stateObj.ezberAyet.arapca;
       document.getElementById("popup-meal").innerHTML = stateObj.ezberAyet.meal;
 
-      const kitap = stateObj.kitapAdi || "Mektubat (575 s.)";
+      const kitap = stateObj.kitapAdi || "Lemalar (498 s.)";
       const devir = stateObj.devirSayaci || 3; 
       
-      document.getElementById("risale-title").innerHTML = `📗 ${devir}. Devir: ${kitap} – ${stateObj.gunSayaci || 1}. gün <span class="tag">Her gün +3 Sayfa</span>`;
-      document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${stateObj.sureHaftaSayaci || 14}. Hafta) <span class="tag">Haftalık Devir</span>`;
-      document.getElementById("kuran-title").innerHTML = `📖 Kur’ân-ı Azîmüşşan Okuması (${stateObj.haftaSayaci || 26}. Hafta) <span class="tag">Haftalık +20 Sayfa</span>`;
+      document.getElementById("risale-title").innerHTML = `📗 ${devir}. Devir: ${kitap} – ${stateObj.gunSayaci || 4}. gün <span class="tag">Her gün +3 Sayfa</span>`;
+      document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${stateObj.sureHaftaSayaci || 18}. Hafta) <span class="tag">Haftalık Devir</span>`;
+      document.getElementById("kuran-title").innerHTML = `📖 Kur’ân-ı Azîmüşşan Okuması (${stateObj.haftaSayaci || 30}. Hafta) <span class="tag">Haftalık +20 Sayfa</span>`;
 
       let totalTasks = 0; let completedTasks = 0;
       function checkCounter(id) { totalTasks++; if (tikler[id]) completedTasks++; }
@@ -1072,21 +1073,14 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-      // 4. Sekine (O güne ait tarih nesnesinden gün hesaplanarak doğru isim getirilir)
-      let dObj = new Date();
-      if (stateObj.programTarihi) {
-        // Tarih metninden gün bulma veya varsayılan
-        // Arşivdeki tarihe göre Sekine abisini o günün verisinden alıyoruz
-      }
-      const bugunNo = new Date().getDay(); 
-      const sItem = sekineNobetleri[bugunNo]; 
-      const sekineId = 'sekine'; checkCounter(sekineId);
+      // 4. Sekine
+      const bugunNo = new Date().getDay(); const sItem = sekineNobetleri[bugunNo]; const sekineId = 'sekine'; checkCounter(sekineId);
       document.getElementById("list-sekine").innerHTML = `
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
 
-      // 5. Cevsen (Arşivdeki o güne ait cevsen kisileri kullanılıyor)
+      // 5. Cevsen
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
@@ -1094,7 +1088,7 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.cevsenBloklar[idx]} Babları</div></div></div></div>`;
       }).join("");
 
-      // 6. Sure (Arşivdeki o güne ait sure nobetleri kullanılıyor)
+      // 6. Sure 
       document.getElementById("list-sure").innerHTML = (stateObj.sureNobetleri || []).map((s, idx) => {
         const id = 'sur_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
@@ -1103,7 +1097,7 @@
             <button class="btn-mujde" onclick="showMujde(event, '${s.s.replace(/'/g, "\\'")}')">✨ Müjde</button></div>`;
       }).join("");
 
-      // 7. Kuran (Arşivdeki o güne ait kuran sayfaları kullanılıyor)
+      // 7. Kuran
       document.getElementById("list-kuran").innerHTML = (stateObj.kuranSayfalari || []).map((k, idx) => {
         const id = 'kur_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
