@@ -1,73 +1,206 @@
-function videoIndirIslemi() {
-      const urlInput = document.getElementById("medyaUrl");
-      const url = urlInput.value.trim();
-      if (!url) {
-        alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
-        return;
-      }
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şahsi Okumalar ve Medya Paneli</title>
+    <!-- Firebase SDK (Sayaç ve veriler için) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .panel {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        .buton-grubu {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-video {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-foto {
+            background-color: #ff9800;
+            color: white;
+        }
+        #fotoSecenekPaneli {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            border: 1px dashed #ff9800;
+            border-radius: 5px;
+            background: #fff8f0;
+        }
+    </style>
+</head>
+<body>
 
-      // Sayacı artır
-      db.ref("panoState/medyaSayaci").transaction((currentValue) => {
-        return (currentValue || 0) + 1;
-      });
+    <div class="container">
+        <!-- Video ve Fotoğraf İndirme Paneli -->
+        <div class="panel">
+            <h3>🎬 Video ve Fotoğraf İndirme Paneli</h3>
+            <p>Toplam İşlem Sayısı: <span id="sayacGosterge">0</span></p>
+            
+            <input type="text" id="medyaUrl" placeholder="YouTube, X veya Instagram linkini buraya yapıştırın...">
+            
+            <div class="buton-grubu">
+                <button class="btn-video" onclick="videoIndirIslemi()">📥 Video İndir</button>
+                <button class="btn-foto" onclick="fotoSecenekleriniAc()">📸 Foto Al</button>
+            </div>
 
-      // Python sunucusuna istek gönderiyoruz
-      fetch('http://127.0.0.1:5000/indir', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url, tur: 'video' })
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert("Video başarıyla indirildi! Mesaj: " + data.mesaj);
-      })
-      .catch((error) => {
-        console.error('Hata:', error);
-        alert("İndirme talebi gönderildi fakat sunucuya ulaşılamadı.");
-      });
+            <!-- Fotoğraf Çekim Seçenek Paneli (Butona basınca açılır) -->
+            <div id="fotoSecenekPaneli">
+                <p style="margin-top:0;"><b>📸 2K / 4K Fotoğraf / Kare Seçenekleri:</b></p>
+                
+                <label for="saniyeSelect">Saniye Seçin:</label><br>
+                <select id="saniyeSelect" style="padding: 8px; margin-top: 5px; width: 100%;">
+                    <option value="1">1. Saniye</option>
+                    <option value="2">2. Saniye</option>
+                    <option value="3">3. Saniye</option>
+                    <option value="4">4. Saniye</option>
+                    <option value="5">5. Saniye</option>
+                    <option value="10">10. Saniye</option>
+                    <option value="30">30. Saniye</option>
+                </select>
+                
+                <br><br>
+                <label for="manuelSaniyeler">Veya saniyeleri virgülle girin (Örn: 5, 15, 45):</label><br>
+                <input type="text" id="manuelSaniyeler" placeholder="5, 15, 45" style="margin-top: 5px;">
+                
+                <br>
+                <button onclick="fotoIndirBaslat()" style="background-color: #28a745; color: white; padding: 10px 20px; width: 100%; margin-top: 10px;">Kareleri İndir</button>
+            </div>
+        </div>
+    </div>
 
-      urlInput.value = "";
-    }
+    <script>
+        // Firebase Yapılandırması (Kendi proje bilgilerin burada olmalı)
+        const firebaseConfig = {
+            databaseURL: "https://okumatakip-default-rtdb.firebaseio.com/"
+        };
+        
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
 
-    function fotoSecenekleriniAc() {
-        const panel = document.getElementById("fotoSecenekPaneli");
-        panel.style.display = panel.style.display === "none" ? "block" : "none";
-    }
+        // Sayacı Canlı Takip Et
+        db.ref("panoState/medyaSayaci").on("value", (snapshot) => {
+            const val = snapshot.val() || 0;
+            document.getElementById("sayacGosterge").innerText = val;
+        });
 
-    function fotoIndirBaslat() {
-        const urlInput = document.getElementById("medyaUrl");
-        const url = urlInput.value.trim();
-        const secilenSaniye = document.getElementById("saniyeSelect").value;
-        const manuelSaniyeler = document.getElementById("manuelSaniyeler").value.trim();
+        // Video İndirme Fonksiyonu
+        function videoIndirIslemi() {
+            const urlInput = document.getElementById("medyaUrl");
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert("Lütfen geçerli bir bağlantı (link) yapıştırın!");
+                return;
+            }
 
-        if (!url) {
-            alert("Lütfen önce bir bağlantı (link) yapıştırın!");
-            return;
+            // Sayacı artır
+            db.ref("panoState/medyaSayaci").transaction((currentValue) => {
+                return (currentValue || 0) + 1;
+            });
+
+            alert("Video indirme talebiniz alındı! (Arka plan bulut motoru aktifleştiriliyor...)");
+
+            // Python sunucusuna istek at
+            fetch('http://127.0.0.1:5000/indir', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Video başarıyla indirildi! Mesaj: " + data.mesaj);
+            })
+            .catch((error) => {
+                console.error('Hata:', error);
+                alert("İndirme talebi gönderildi fakat sunucuya ulaşılamadı.");
+            });
+
+            urlInput.value = "";
         }
 
-        // Manuel saniye girildiyse onu, girilmediyse listedekini al
-        let hedefSaniyeler = manuelSaniyeler !== "" ? manuelSaniyeler : secilenSaniye;
+        // Fotoğraf Seçenek Panelini Aç/Kapat
+        function fotoSecenekleriniAc() {
+            const panel = document.getElementById("fotoSecenekPaneli");
+            panel.style.display = panel.style.display === "none" ? "block" : "none";
+        }
 
-        // Sayacı artır
-        db.ref("panoState/medyaSayaci").transaction((currentValue) => {
-            return (currentValue || 0) + 1;
-        });
+        // Fotoğraf / Kare İndirme İşlemini Başlat
+        function fotoIndirBaslat() {
+            const urlInput = document.getElementById("medyaUrl");
+            const url = urlInput.value.trim();
+            const secilenSaniye = document.getElementById("saniyeSelect").value;
+            const manuelSaniyeler = document.getElementById("manuelSaniyeler").value.trim();
 
-        // Python sunucusuna istek gönderiyoruz
-        fetch('http://127.0.0.1:5000/foto-al', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ url: url, saniyeler: hedefSaniyeler })
-        })
-        .then(response => response.json())
-        .then(data => {
-            alert("Fotoğraf/Kareler başarıyla indirildi! Mesaj: " + data.mesaj);
-            document.getElementById("fotoSecenekPaneli").style.display = "none";
-        })
-        .catch((error) => {
-            console.error('Hata:', error);
-            alert("İstek gönderildi fakat sunucuya ulaşılamadı.");
-        });
+            if (!url) {
+                alert("Lütfen önce bir bağlantı (link) yapıştırın!");
+                return;
+            }
 
-        urlInput.value = "";
-    }
+            // Manuel saniye girildiyse onu, girilmediyse listedekini al
+            let hedefSaniyeler = manuelSaniyeler !== "" ? manuelSaniyeler : secilenSaniye;
+
+            // Sayacı artır
+            db.ref("panoState/medyaSayaci").transaction((currentValue) => {
+                return (currentValue || 0) + 1;
+            });
+
+            alert("Ekran görüntüsü (foto) alma talebiniz alındı! (İşlem başlatılıyor...)");
+
+            // Python sunucusuna istek gönder
+            fetch('http://127.0.0.1:5000/foto-al', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url: url, saniyeler: hedefSaniyeler })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Fotoğraf/Kareler başarıyla indirildi! Mesaj: " + data.mesaj);
+                document.getElementById("fotoSecenekPaneli").style.display = "none";
+            })
+            .catch((error) => {
+                console.error('Hata:', error);
+                alert("İstek gönderildi fakat sunucuya ulaşılamadı.");
+            });
+
+            urlInput.value = "";
+            document.getElementById("manuelSaniyeler").value = "";
+        }
+    </script>
+</body>
+</html>
