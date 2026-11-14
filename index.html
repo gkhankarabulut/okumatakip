@@ -1144,7 +1144,7 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-// 4. Sekine
+// 4. Sekine (Arşiv veya Canlı tarihine göre gün tespiti)
       let gunIndeks = new Date().getDay();
       if (stateObj.programTarihi) {
         if (stateObj.programTarihi.includes("Pazartesi")) gunIndeks = 1;
@@ -1161,7 +1161,6 @@
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
-
       
       // 5. Cevsen
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
