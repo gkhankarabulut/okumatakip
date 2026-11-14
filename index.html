@@ -1144,13 +1144,25 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-      // 4. Sekine
-      const bugunNo = new Date().getDay(); const sItem = sekineNobetleri[bugunNo]; const sekineId = 'sekine'; checkCounter(sekineId);
+// 4. Sekine
+      let gunIndeks = new Date().getDay();
+      if (stateObj.programTarihi) {
+        if (stateObj.programTarihi.includes("Pazartesi")) gunIndeks = 1;
+        else if (stateObj.programTarihi.includes("Salı")) gunIndeks = 2;
+        else if (stateObj.programTarihi.includes("Çarşamba")) gunIndeks = 3;
+        else if (stateObj.programTarihi.includes("Perşembe")) gunIndeks = 4;
+        else if (stateObj.programTarihi.includes("Cuma")) gunIndeks = 5;
+        else if (stateObj.programTarihi.includes("Cumartesi")) gunIndeks = 6;
+        else if (stateObj.programTarihi.includes("Pazar")) gunIndeks = 0;
+      }
+      const sItem = sekineNobetleri[gunIndeks]; 
+      const sekineId = 'sekine'; checkCounter(sekineId);
       document.getElementById("list-sekine").innerHTML = `
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
 
+      
       // 5. Cevsen
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
