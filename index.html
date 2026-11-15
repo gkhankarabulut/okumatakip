@@ -1144,24 +1144,26 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-      // 4. Sekine (Kesinlikle seçilen arşiv veya canlı tarih metnine göre gün tespiti)
-      let gunIndeks = 6; // Varsayılan Cumartesi
-      let tarihMetni = stateObj.programTarihi || "";
+      // 4. Sekine (Kesin Gün Tespiti)
+      let gunIndeks = new Date().getDay();
+      let tarihMetni = (stateObj.programTarihi || "").toLowerCase();
       
-      if (tarihMetni.includes("Pazartesi")) gunIndeks = 1;
-      else if (tarihMetni.includes("Salı")) gunIndeks = 2;
-      else if (tarihMetni.includes("Çarşamba")) gunIndeks = 3;
-      else if (tarihMetni.includes("Perşembe")) gunIndeks = 4;
-      else if (tarihMetni.includes("Cuma")) gunIndeks = 5;
-      else if (tarihMetni.includes("Cumartesi")) gunIndeks = 6;
-      else if (tarihMetni.includes("Pazar")) gunIndeks = 0;
+      if (tarihMetni.includes("pazartesi")) gunIndeks = 1;
+      else if (tarihMetni.includes("salı") || tarihMetni.includes("sali")) gunIndeks = 2;
+      else if (tarihMetni.includes("çarşamba") || tarihMetni.includes("carsamba")) gunIndeks = 3;
+      else if (tarihMetni.includes("perşembe") || tarihMetni.includes("persembe")) gunIndeks = 4;
+      else if (tarihMetni.includes("cuma")) gunIndeks = 5;
+      else if (tarihMetni.includes("cumartesi")) gunIndeks = 6;
+      else if (tarihMetni.includes("pazar")) gunIndeks = 0;
 
       const sItem = sekineNobetleri[gunIndeks]; 
       const sekineId = 'sekine'; checkCounter(sekineId);
       document.getElementById("list-sekine").innerHTML = `
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
-          <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;      // 5. Cevsen
+          <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
+
+      // 5. Cevşen (Eksik olan kısım buradaydı, yeniden eklendi)
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
