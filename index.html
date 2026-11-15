@@ -1144,8 +1144,8 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-      // 4. Sekine (Kesin Gün Tespiti)
-      let gunIndeks = new Date().getDay();
+     // 4. Sekine (Kusursuz Arşiv Gün Tespiti)
+      let gunIndeks = 6; // Varsayılan Cumartesi
       let tarihMetni = (stateObj.programTarihi || "").toLowerCase();
       
       if (tarihMetni.includes("pazartesi")) gunIndeks = 1;
@@ -1155,6 +1155,10 @@
       else if (tarihMetni.includes("cuma")) gunIndeks = 5;
       else if (tarihMetni.includes("cumartesi")) gunIndeks = 6;
       else if (tarihMetni.includes("pazar")) gunIndeks = 0;
+      else {
+        // Eğer programTarihi metninden anlaşılamazsa sistem tarihini baz al
+        gunIndeks = new Date().getDay();
+      }
 
       const sItem = sekineNobetleri[gunIndeks]; 
       const sekineId = 'sekine'; checkCounter(sekineId);
@@ -1162,7 +1166,6 @@
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
-
       // 5. Cevşen (Eksik olan kısım buradaydı, yeniden eklendi)
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
