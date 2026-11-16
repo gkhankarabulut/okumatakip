@@ -1049,11 +1049,18 @@ kuranSayfalari: [
       return `${d.getDate()} ${aylar[d.getMonth()]} ${d.getFullYear()} ${gunler[d.getDay()]}`;
     }
 
-    function advanceToNextDay() {
+function advanceToNextDay() {
       if (!confirm("Günü ilerletmek istiyor musunuz? Mevcut gün tam haliyle arşive kaydedilecek ve görevler sıfırlanacak.")) return;
       
       let archiveKey = "gun_" + Date.now();
-      archiveRef.child(archiveKey).set(liveState);
+      
+      // O anki sure nöbetlerini de o günün arşivine kilitliyoruz ki geçmişe bakıldığında değişmesin
+      let gunlukState = {
+        ...liveState,
+        sureNobetleri: liveState.sureNobetleri || defaultState.sureNobetleri
+      };
+
+      archiveRef.child(archiveKey).set(gunlukState);
 
       const yeniRisale = liveState.risaleSayfalari.map(item => ({ ...item, basla: item.basla + 3, bitir: item.bitir + 3 }));
       const yeniTahmidiye = [...liveState.tahmidiyeBloklar]; yeniTahmidiye.push(yeniTahmidiye.shift());
@@ -1066,7 +1073,6 @@ kuranSayfalari: [
         vefaSirasi: yeniVefa, canliTikler: {}
       }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`); startPopupSequence(); });
     }
-
     function advanceToNextWeek() {
       if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân sayfaları ilerleyecek.")) return;
       
