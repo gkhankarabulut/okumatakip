@@ -926,7 +926,7 @@
 
     const defaultState = {
       programTarihi: "14 Kasım 2026 Cumartesi", sonGuncelleme: "14.11.2026 – 06:00",
-      kitapAdi: "Lemalar (498 s.)", gunSayaci: 4, haftaSayaci: 30, sureHaftaSayaci: 18, devirSayaci: 3,
+      kitapAdi: "Lemalar (498 s.)", gunSayaci: 4, haftaSayaci: 31, sureHaftaSayaci: 18, devirSayaci: 3, hatimSayaci: 3,
       ezberAyet: {
         arapca: "سُبْحَانَكَ لَا عِلْمَ لَنَٓا اِلَّا مَا عَلَّمْتَنَ اِنَّكَ اَنْتَ الْعَلٖيمُ الْحَكٖيمُ",
         meal: '"Seni her türlü noksandan tenzih ederiz. Senin bize öğrettiğinden başka bizim hiçbir bilgimiz yoktur. Şüphesiz her şeyi hakkıyla bilen, her hükmü yerinde olan Sensin." (Bakara, 32)'
@@ -951,11 +951,11 @@
         { isim: "Mesut", s: "Cuma Sûresi (11 âyet)" }, { isim: "Muhyiddin", s: "Rahmân Sûresi (78 âyet)" }
       ],
       kuranSayfalari: [
-        { isim: "Yusuf Sarıoğlu Abi", basla: 581, bitir: 582 }, { isim: "Ercan Abi", basla: 583, bitir: 584 },
-        { isim: "Gökhan", basla: 585, bitir: 585 }, { isim: "Necmettin", basla: 586, bitir: 586 },
-        { isim: "Mehmet Biber", basla: 587, bitir: 588 }, { isim: "Hakan", basla: 589, bitir: 590 },
-        { isim: "Macit Abi", basla: 591, bitir: 592 }, { isim: "Muhyiddin", basla: 593, bitir: 594 },
-        { isim: "Necdet Abi", basla: 595, bitir: 596 }, { isim: "Mesut", basla: 597, bitir: 598 }, { isim: "Yusuf Erge Abi", basla: 599, bitir: 600 }
+        { isim: "Yusuf Erge Abi", basla: 1, bitir: 2 }, { isim: "Yusuf Sarıoğlu Abi", basla: 3, bitir: 4 },
+        { isim: "Ercan Abi", basla: 5, bitir: 6 }, { isim: "Gökhan", basla: 7, bitir: 7 },
+        { isim: "Necmettin", basla: 8, bitir: 8 }, { isim: "Mehmet Biber", basla: 9, bitir: 10 },
+        { isim: "Hakan", basla: 11, bitir: 12 }, { isim: "Macit Abi", basla: 13, bitir: 14 },
+        { isim: "Muhyiddin", basla: 15, bitir: 16 }, { isim: "Necdet Abi", basla: 17, bitir: 18 }, { isim: "Mesut", basla: 19, bitir: 20 }
       ], vefaSirasi: 0, canliTikler: {}
     };
 
@@ -972,7 +972,8 @@
           sureNobetleri: data.sureNobetleri || defaultState.sureNobetleri,
           kuranSayfalari: data.kuranSayfalari || defaultState.kuranSayfalari,
           cevsenKisiler: data.cevsenKisiler || defaultState.cevsenKisiler,
-          devirSayaci: data.devirSayaci || defaultState.devirSayaci
+          devirSayaci: data.devirSayaci || defaultState.devirSayaci,
+          hatimSayaci: data.hatimSayaci || 3
         };
         if (!viewingArchiveKey) render(liveState);
       }
@@ -1060,11 +1061,11 @@
       }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`); startPopupSequence(); });
     }
 
-
     function advanceToNextWeek() {
       if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân sayfaları ilerleyecek.")) return;
       
-      const kList = [...liveState.kuranSayfalari];
+      let kList = [...liveState.kuranSayfalari];
+      let hatimSayaci = liveState.hatimSayaci || 3;
       let hatimBittiMi = false;
 
       // 1. Kur'ân Sayfalarını 20'şer sayfa ilerletme
@@ -1074,7 +1075,7 @@
         
         if (yeniBasla > 604) {
           yeniBasla = ((yeniBasla - 1) % 604) + 1;
-          hatimBittiMi = true; // Hatim tamamlandı bayrağı kalkıyor
+          hatimBittiMi = true; 
         }
         if (yeniBitir > 604) {
           yeniBitir = ((yeniBitir - 1) % 604) + 1;
@@ -1082,13 +1083,15 @@
         return { isim: item.isim, basla: yeniBasla, bitir: yeniBitir };
       });
 
-      // 2. İsimlerin kayması SADECE HATİM BİTTİĞİNDE gerçekleşir!
+      // 2. İsimlerin kayması SADECE HATİM BİTTİĞİNDE gerçekleşir! 
+      // İstediğiniz nizamda: Sonuncu kişi (Yusuf Erge Abi) en başa gelir, diğerleri bir sıra aşağı kayar.
       if (hatimBittiMi) {
         let sonKisi = yeniKuran.pop();
         yeniKuran.unshift(sonKisi);
+        hatimSayaci++;
       }
 
-      // Sûre nöbetleri ve Cevşen kişileri her hafta olduğu gibi devretmeye devam eder
+      // Sûre nöbetleri ve Cevşen devir yönleri
       const sureler = liveState.sureNobetleri.map(item => item.s); 
       sureler.unshift(sureler.pop()); 
       const yeniSureNobetleri = liveState.sureNobetleri.map((item, idx) => ({ isim: item.isim, s: sureler[idx] }));
@@ -1101,12 +1104,12 @@
 
       stateRef.update({
         sonGuncelleme: formatNow(), haftaSayaci: yeniHafta, sureHaftaSayaci: yeniSureHafta,
-        kuranSayfalari: yeniKuran, sureNobetleri: yeniSureNobetleri, cevsenKisiler: yeniCevsenKisiler
+        hatimSayaci: hatimSayaci, kuranSayfalari: yeniKuran, sureNobetleri: yeniSureNobetleri, cevsenKisiler: yeniCevsenKisiler
       }).then(() => { 
         if(hatimBittiMi) {
-          alert("Tebrikler! Bir Kur'ân Hatmi tamamlandı! Yeni hatim 1. sayfadan başlatıldı ve isimler bir sıra kaydırıldı.");
+          alert(`Tebrikler! ${hatimSayaci}. Hatim başlatıldı. İsimler yukarıdan aşağıya doğru devredildi.`);
         } else {
-          alert("Hafta güncellendi! Kur'ân sayfaları ilerledi (isimler sabit kaldı)."); 
+          alert("Hafta güncellendi! Kur'ân sayfaları 20şer sayfa ilerledi."); 
         }
       });
     }
@@ -1147,7 +1150,11 @@
       
       document.getElementById("risale-title").innerHTML = `📗 ${devir}. Devir: ${kitap} – ${stateObj.gunSayaci || 4}. gün <span class="tag">Her gün +3 Sayfa</span>`;
       document.getElementById("sure-title").innerHTML = `📖 Sure Nöbetleri (${stateObj.sureHaftaSayaci || 18}. Hafta) <span class="tag">Haftalık Devir</span>`;
-      document.getElementById("kuran-title").innerHTML = `📖 Kur’ân-ı Azîmüşşan Okuması (${stateObj.haftaSayaci || 30}. Hafta) <span class="tag">Haftalık +20 Sayfa</span>`;
+      
+      // Kur'an Başlığı (Hatim ve Hafta Takibi)
+      const hSayisi = stateObj.hatimSayaci || 3;
+      const hHaftasi = ((stateObj.haftaSayaci - 1) % 5) + 1; 
+      document.getElementById("kuran-title").innerHTML = `📖 Kur’ân-ı Azîmüşşan Okuması (${hSayisi}. Hatim - ${hHaftasi}. Hafta) <span class="tag">Haftalık +20 Sayfa</span>`;
 
       let totalTasks = 0; let completedTasks = 0;
       function checkCounter(id) { totalTasks++; if (tikler[id]) completedTasks++; }
@@ -1176,8 +1183,8 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-     // 4. Sekine (Kusursuz Arşiv Gün Tespiti)
-      let gunIndeks = 6; // Varsayılan Cumartesi
+      // 4. Sekine
+      let gunIndeks = new Date().getDay();
       let tarihMetni = (stateObj.programTarihi || "").toLowerCase();
       
       if (tarihMetni.includes("pazartesi")) gunIndeks = 1;
@@ -1188,7 +1195,6 @@
       else if (tarihMetni.includes("cumartesi")) gunIndeks = 6;
       else if (tarihMetni.includes("pazar")) gunIndeks = 0;
       else {
-        // Eğer programTarihi metninden anlaşılamazsa sistem tarihini baz al
         gunIndeks = new Date().getDay();
       }
 
@@ -1198,7 +1204,8 @@
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
-      // 5. Cevşen (Eksik olan kısım buradaydı, yeniden eklendi)
+
+      // 5. Cevşen
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
@@ -1215,7 +1222,7 @@
             <button class="btn-mujde" onclick="showMujde(event, '${s.s.replace(/'/g, "\\'")}')">✨ Müjde</button></div>`;
       }).join("");
 
-  // 7. Kuran
+      // 7. Kuran
       document.getElementById("list-kuran").innerHTML = (stateObj.kuranSayfalari || []).map((k, idx) => {
         const id = 'kur_' + idx; checkCounter(id);
         let metaYazi = "";
@@ -1223,11 +1230,9 @@
         if (k.basla <= k.bitir) {
           metaYazi = (k.basla === k.bitir) ? `${k.basla}. Sayfa` : `${k.basla}–${k.bitir}. Sayfalar`;
         } else {
-          // Hatim tamamlanıp başa sarma durumu (Örn: 599–604 ve 1–4)
           metaYazi = `${k.basla}–604 ve 1–${k.bitir}. Sayfalar`;
         }
 
-        // Eğer 604. sayfayı kapsıyorsa veya hatim sonuysa Hatim Duası ekle
         if (k.bitir === 604 || k.basla > k.bitir || k.bitir == 604) {
           metaYazi += " 🤲 Hatim Duası";
         }
