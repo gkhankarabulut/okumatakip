@@ -1060,23 +1060,55 @@
       }).then(() => { alert(`Döngü başarıyla ${yeniGun}. güne ilerletildi!`); startPopupSequence(); });
     }
 
+
     function advanceToNextWeek() {
-      if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân ilerleyecek, Sûre ve Cevşen devredecek.")) return;
-      const yeniKuran = liveState.kuranSayfalari.map(item => {
-        let b = item.basla + 20; let son = item.bitir + 20;
-        if (b > 604) b = (b % 604) || 604; if (son > 604) son = (son % 604) || 604;
-        return { ...item, basla: b, bitir: son };
+      if (!confirm("Yeni haftaya geçmek istiyor musunuz? Kur'ân sayfaları ilerleyecek.")) return;
+      
+      const kList = [...liveState.kuranSayfalari];
+      let hatimBittiMi = false;
+
+      // 1. Kur'ân Sayfalarını 20'şer sayfa ilerletme
+      let yeniKuran = kList.map((item) => {
+        let yeniBasla = item.basla + 20;
+        let yeniBitir = item.bitir + 20;
+        
+        if (yeniBasla > 604) {
+          yeniBasla = ((yeniBasla - 1) % 604) + 1;
+          hatimBittiMi = true; // Hatim tamamlandı bayrağı kalkıyor
+        }
+        if (yeniBitir > 604) {
+          yeniBitir = ((yeniBitir - 1) % 604) + 1;
+        }
+        return { isim: item.isim, basla: yeniBasla, bitir: yeniBitir };
       });
-      const sureler = liveState.sureNobetleri.map(item => item.s); sureler.unshift(sureler.pop());
+
+      // 2. İsimlerin kayması SADECE HATİM BİTTİĞİNDE gerçekleşir!
+      if (hatimBittiMi) {
+        let sonKisi = yeniKuran.pop();
+        yeniKuran.unshift(sonKisi);
+      }
+
+      // Sûre nöbetleri ve Cevşen kişileri her hafta olduğu gibi devretmeye devam eder
+      const sureler = liveState.sureNobetleri.map(item => item.s); 
+      sureler.unshift(sureler.pop()); 
       const yeniSureNobetleri = liveState.sureNobetleri.map((item, idx) => ({ isim: item.isim, s: sureler[idx] }));
+      
       const yeniCevsenKisiler = [...(liveState.cevsenKisiler || defaultState.cevsenKisiler)];
       yeniCevsenKisiler.unshift(yeniCevsenKisiler.pop()); 
-      const yeniHafta = (liveState.haftaSayaci || 25) + 1; const yeniSureHafta = (liveState.sureHaftaSayaci || 13) + 1;
+
+      const yeniHafta = (liveState.haftaSayaci || 30) + 1; 
+      const yeniSureHafta = (liveState.sureHaftaSayaci || 18) + 1;
 
       stateRef.update({
         sonGuncelleme: formatNow(), haftaSayaci: yeniHafta, sureHaftaSayaci: yeniSureHafta,
         kuranSayfalari: yeniKuran, sureNobetleri: yeniSureNobetleri, cevsenKisiler: yeniCevsenKisiler
-      }).then(() => { alert("Hafta güncellendi! Kur'ân ilerledi, Sûreler ve Cevşen devredildi."); });
+      }).then(() => { 
+        if(hatimBittiMi) {
+          alert("Tebrikler! Bir Kur'ân Hatmi tamamlandı! Yeni hatim 1. sayfadan başlatıldı ve isimler bir sıra kaydırıldı.");
+        } else {
+          alert("Hafta güncellendi! Kur'ân sayfaları ilerledi (isimler sabit kaldı)."); 
+        }
+      });
     }
 
     function loadArchiveDay() {
@@ -1183,14 +1215,28 @@
             <button class="btn-mujde" onclick="showMujde(event, '${s.s.replace(/'/g, "\\'")}')">✨ Müjde</button></div>`;
       }).join("");
 
-      // 7. Kuran
+  // 7. Kuran
       document.getElementById("list-kuran").innerHTML = (stateObj.kuranSayfalari || []).map((k, idx) => {
         const id = 'kur_' + idx; checkCounter(id);
+        let metaYazi = "";
+        
+        if (k.basla <= k.bitir) {
+          metaYazi = (k.basla === k.bitir) ? `${k.basla}. Sayfa` : `${k.basla}–${k.bitir}. Sayfalar`;
+        } else {
+          // Hatim tamamlanıp başa sarma durumu (Örn: 599–604 ve 1–4)
+          metaYazi = `${k.basla}–604 ve 1–${k.bitir}. Sayfalar`;
+        }
+
+        // Eğer 604. sayfayı kapsıyorsa veya hatim sonuysa Hatim Duası ekle
+        if (k.bitir === 604 || k.basla > k.bitir || k.bitir == 604) {
+          metaYazi += " 🤲 Hatim Duası";
+        }
+
         return `<div class="task-item ${tikler[id] ? 'checked' : ''}" onclick="toggleTask('${id}')">
             <div class="task-info"><div class="custom-checkbox"></div>
-            <div class="task-details"><div class="name">${k.isim}</div><div class="meta">${k.basla === k.bitir ? k.basla : k.basla + '–' + k.bitir}. Sayfalar</div></div></div></div>`;
+            <div class="task-details"><div class="name">${k.isim}</div><div class="meta">${metaYazi}</div></div></div></div>`;
       }).join("");
-
+      
       if (isAdmin && totalTasks > 0) {
         const yuzde = Math.round((completedTasks / totalTasks) * 100);
         document.getElementById("admin-stats-text").innerText = `${completedTasks} / ${totalTasks} Görev Okundu (%${yuzde})`;
