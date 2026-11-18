@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nesiba Aktaş İçin Hatim ve Hizb Paylaşım Programı</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        
+        <!-- Başlık ve Taziye Alanı -->
+        <div class="bg-emerald-800 text-white rounded-2xl p-6 shadow-lg mb-8 text-center">
+            <span class="bg-emerald-700 text-emerald-100 text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">Hatim & Hizb Paylaşım Platformu</span>
+            <h1 class="text-2xl md:text-3xl font-bold mt-3 mb-2">Merhume Nesiba Aktaş</h1>
+            <p class="text-emerald-200 text-sm md:text-base font-medium">Selahaddin Aktaş’ın Annesi</p>
+            <div class="mt-4 pt-4 border-t border-emerald-700 text-emerald-100 text-sm max-w-2xl mx-auto">
+                <p>Ruhu için okunacak hatimler ve hizbler aşağıdadır. Lütfen katılmak istediğiniz hizbi seçip adınızı yazarak "Hizb Al" butonuna tıklayınız. Allah yapılanları kabul eylesin.</p>
+            </div>
+        </div>
+
+        <!-- İstatistik Çubuğu -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                <div class="text-slate-500 text-xs font-medium uppercase">Toplam Hizb</div>
+                <div class="text-2xl font-bold text-slate-800 mt-1">120</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                <div class="text-emerald-600 text-xs font-medium uppercase">Alınan</div>
+                <div id="stat-alinan" class="text-2xl font-bold text-emerald-600 mt-1">0</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
+                <div class="text-amber-600 text-xs font-medium uppercase">Kalan</div>
+                <div id="stat-kalan" class="text-2xl font-bold text-amber-600 mt-1">120</div>
+            </div>
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center flex flex-col justify-center">
+                <button onclick="whatsappPaylas()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2 px-3 rounded-lg transition-all flex items-center justify-center gap-1 shadow">
+                    📱 WhatsApp Paylaş
+                </button>
+            </div>
+        </div>
+
+        <!-- Hatim Listesi -->
+        <div id="hizb-listesi" class="space-y-6">
+            <!-- JavaScript ile doldurulacak -->
+        </div>
+
+        <!-- Alt Not / Hatim Duası Bilgisi -->
+        <div class="mt-12 bg-amber-50 border border-amber-200 rounded-xl p-6 text-center text-amber-900">
+            <h3 class="font-bold text-lg mb-1">Dualarınızda Unutmayın</h3>
+            <p class="text-sm">30. cüz tamamlandığında hatim duası yapılacaktır. Katkıda bulunan tüm akraba ve dostlarımızdan Allah razı olsun.</p>
+        </div>
+    </div>
+
+    <script>
+        // 30 Cüz * 4 Hizb = 120 Hizb
+        let hizbler = JSON.parse(localStorage.getItem('nesiba_aktas_hatim')) || [];
+        
+        if (hizbler.length === 0) {
+            let idCounter = 1;
+            for (let c = 1; c <= 30; c++) {
+                for (let h = 1; h <= 4; h++) {
+                    hizbler.push({
+                        id: idCounter++,
+                        cuz: c,
+                        hizb: h,
+                        alan: "",
+                        tarih: ""
+                    });
+                }
+            }
+            kaydetStorage();
+        }
+
+        function kaydetStorage() {
+            localStorage.setItem('nesiba_aktas_hatim', JSON.stringify(hizbler));
+        }
+
+        function render() {
+            const container = document.getElementById('hizb-listesi');
+            container.innerHTML = '';
+
+            let alinanSayisi = 0;
+
+            // Cüzlere göre grupla
+            for (let c = 1; c <= 30; c++) {
+                let cuzHizbleri = hizbler.filter(h => h.cuz === c);
+                
+                let cuzDiv = document.createElement('div');
+                cuzDiv.className = 'bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden';
+                
+                let cuzHeader = document.createElement('div');
+                cuzHeader.className = 'bg-slate-100 px-6 py-3 border-b border-slate-200 flex justify-between items-center';
+                cuzHeader.innerHTML = `<h2 class="font-bold text-slate-700">${c}. Cüz</h2> <span class="text-xs text-slate-500 font-medium">4 Hizb</span>`;
+                cuzDiv.appendChild(cuzHeader);
+
+                let gridDiv = document.createElement('div');
+                gridDiv.className = 'p-4 grid grid-cols-1 md:grid-cols-2 gap-3';
+
+                cuzHizbleri.forEach(item => {
+                    if (item.alan) alinanSayisi++;
+
+                    let card = document.createElement('div');
+                    card.className = `p-3 rounded-lg border flex items-center justify-between transition-all ${item.alan ? 'bg-emerald-50/50 border-emerald-200' : 'bg-slate-50 border-slate-200 hover:border-emerald-300'}`;
+                    
+                    let infoHtml = `<div>
+                        <div class="font-semibold text-sm text-slate-800">${item.cuz}. Cüz / ${item.hizb}. Hizb</div>
+                        <div class="text-xs mt-0.5 ${item.alan ? 'text-emerald-700 font-medium' : 'text-slate-400'}">
+                            ${item.alan ? '👤 ' + item.alan : 'Henüz alınmadı'}
+                        </div>
+                    </div>`;
+
+                    let actionHtml = '';
+                    if (item.alan) {
+                        actionHtml = `<button onclick="hizbBirak(${item.id})" class="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 bg-white border border-red-200 rounded shadow-sm">Bırak</button>`;
+                    } else {
+                        actionHtml = `<button onclick="hizbAl(${item.id})" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded shadow-sm transition-all">Hizb Al</button>`;
+                    }
+
+                    card.innerHTML = infoHtml + actionHtml;
+                    gridDiv.appendChild(card);
+                });
+
+                cuzDiv.appendChild(gridDiv);
+                container.appendChild(cuzDiv);
+            }
+
+            document.getElementById('stat-alinan').innerText = alinanSayisi;
+            document.getElementById('stat-kalan').innerText = 120 - alinanSayisi;
+        }
+
+        function hizbAl(id) {
+            let isim = prompt("Hizbi alanın adı ve soyadı:");
+            if (isim && isim.trim() !== "") {
+                let h = hizbler.find(x => x.id === id);
+                if (h) {
+                    h.alan = isim.trim();
+                    kaydetStorage();
+                    render();
+                }
+            }
+        }
+
+        function hizbBirak(id) {
+            if (confirm("Bu hizbi bırakmak istediğinize emin misiniz?")) {
+                let h = hizbler.find(x => x.id === id);
+                if (h) {
+                    h.alan = "";
+                    kaydetStorage();
+                    render();
+                }
+            }
+        }
+
+        function whatsappPaylas() {
+            let alinan = hizbler.filter(h => h.alan !== "").length;
+            let kalan = 120 - alinan;
+            
+            let metin = `🤲 *Merhume Nesiba Aktaş (Selahaddin Aktaş’ın Annesi) İçin Hatim / Hizb Takip Listesi*\n\n`;
+            metin += `📊 *Durum:* ${alinan} hizb alındı, ${kalan} hizb kaldı.\n\n`;
+            metin += `🔗 Hizb almak ve listeyi görmek için tıklayın:\n` + window.location.href + `\n\nAllah şimdiden okuyan herkesten razı olsun.`;
+
+            let encoded = encodeURIComponent(metin);
+            window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+        }
+
+        render();
+    </script>
+</body>
+</html>
