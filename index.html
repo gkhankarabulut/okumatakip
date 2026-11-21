@@ -1182,25 +1182,26 @@
             <div class="task-details"><div class="name">${kisi}</div><div class="meta">${stateObj.delailBloklar[idx]}. Bölüm</div></div></div></div>`;
       }).join("");
 
-      // 4. Sekine
-      let gunIndeks = new Date().getDay();
-      let tarihMetni = (stateObj.programTarihi || "").toLowerCase();
-      
-      if (tarihMetni.includes("pazartesi")) gunIndeks = 1;
-      else if (tarihMetni.includes("salı") || tarihMetni.includes("sali")) gunIndeks = 2;
-      else if (tarihMetni.includes("çarşamba") || tarihMetni.includes("carsamba")) gunIndeks = 3;
-      else if (tarihMetni.includes("perşembe") || tarihMetni.includes("persembe")) gunIndeks = 4;
-      else if (tarihMetni.includes("cuma")) gunIndeks = 5;
-      else if (tarihMetni.includes("cumartesi")) gunIndeks = 6;
-      else if (tarihMetni.includes("pazar")) gunIndeks = 0;
+          // 4. Sekine (Tek noktadan gün indeksi çözümleme)
+      const getGunIndeksi = (tarihStr) => {
+        const metin = (tarihStr || "").toLocaleLowerCase("tr-TR");
+        if (metin.includes("cumartesi")) return 6;
+        if (metin.includes("cuma")) return 5;
+        if (metin.includes("perşembe") || metin.includes("persembe")) return 4;
+        if (metin.includes("çarşamba") || metin.includes("carsamba")) return 3;
+        if (metin.includes("salı") || metin.includes("sali")) return 2;
+        if (metin.includes("pazartesi")) return 1;
+        if (metin.includes("pazar")) return 0;
+        return new Date().getDay();
+      };
 
-      const sItem = sekineNobetleri[gunIndeks] || sekineNobetleri[0]; 
+      const gunIndeks = getGunIndeksi(stateObj.programTarihi);
+      const sItem = sekineNobetleri[gunIndeks] || sekineNobetleri[0];
       const sekineId = 'sekine'; checkCounter(sekineId);
       document.getElementById("list-sekine").innerHTML = `
         <div class="task-item ${tikler[sekineId] ? 'checked' : ''}" onclick="toggleTask('${sekineId}')">
           <div class="task-info"><div class="custom-checkbox"></div>
           <div class="task-details"><div class="name">${sItem.abi}</div><div class="meta">${sItem.gun} Günü Sabit Sekîne Nöbeti</div></div></div></div>`;
-
       // 5. Cevşen
       document.getElementById("list-cevsen").innerHTML = (stateObj.cevsenKisiler || defaultState.cevsenKisiler).map((kisi, idx) => {
         const id = 'cev_' + idx; checkCounter(id);
