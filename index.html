@@ -1508,7 +1508,7 @@
               gosterimMetni = `<b style="color:#374151;">${hedef.gosterimAdi}</b> / ${hedef.periyot} ${hedef.miktar} ${okumaBirimi} (Devam eden: <b style="color:#0ea5e9">${hedef.baslangic}${sayfaEki}</b>)`;
               aksiyonButonlari = `<button class="btn-kucuk geri" onclick="sahsiHedefGeriAl(${kisiIndex}, ${hedefIndex})">⏮️ Geri</button><button class="btn-kucuk ileri" onclick="sahsiHedefIlerlet(${kisiIndex}, ${hedefIndex})">⏭️ İlerle</button><button class="btn-kucuk sil" onclick="sahsiHedefSil(${kisiIndex}, ${hedefIndex})">🗑️ Sil</button>`;
             }
-            hDiv.innerHTML = `<div class="sahsi-hedef-sol"><input type="checkbox" ${hedef.tikli ? "checked" : ""} onchange="sahsiTikDegistir(${kisiIndex}, ${hedefIndex}, this.checked)"><span style="color:#4b5563;">${gosterimIni}</span></div><div class="sahsi-hedef-aksiyonlar">${aksiyonButonlari}</div>`;
+            hDiv.innerHTML = `<div class="sahsi-hedef-sol"><input type="checkbox" ${hedef.tikli ? "checked" : ""} onchange="sahsiTikDegistir(${kisiIndex}, ${hedefIndex}, this.checked)"><span style="color:#4b5563;">${gosterimMetni}</span></div><div class="sahsi-hedef-aksiyonlar">${aksiyonButonlari}</div>`;
             hedefListesiDiv.appendChild(hDiv);
           });
         } else { hedefListesiDiv.innerHTML = `<em style="color:#9ca3af; font-size:0.85rem; margin-left:10px;">(Henüz program eklenmedi)</em>`; }
